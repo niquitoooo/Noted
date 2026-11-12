@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fondo del arranque en modo oscuro: el mismo que el fondo oscuro de la app (Theme.kt). -->
+    <color name="window_background">#14130F</color>
+</resources>
