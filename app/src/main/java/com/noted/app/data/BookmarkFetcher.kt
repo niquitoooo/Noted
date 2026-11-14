@@ -1,4 +1,4 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.text.Html
 import kotlinx.coroutines.Dispatchers

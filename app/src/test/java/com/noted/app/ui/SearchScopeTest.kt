@@ -1,7 +1,7 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
-import com.jot.app.data.Note
-import com.jot.app.data.NoteFilter
+import com.noted.app.data.Note
+import com.noted.app.data.NoteFilter
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

@@ -1,10 +1,10 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import androidx.compose.ui.text.TextRange
-import com.jot.app.data.html.HtmlSanitizer
+import com.noted.app.data.html.HtmlSanitizer
 
 /**
  * Pegar con formato: el HTML del portapapeles pasa por
@@ -21,7 +21,7 @@ object RichPaste {
     private val URL = Regex("^[:a-zA-Z0-9_-]{1,20}://\\S+$")
 
     /** La clase de una URL suelta pegada o escrita: se corta en cualquier letra. */
-    const val BREAK_ALL = "jot-break-all"
+    const val BREAK_ALL = "noted-break-all"
 
     /** Los esquemas que nunca son enlace, como en el saneado. */
     private val DANGEROUS_SCHEME = Regex("^(javascript|vbscript|data):", RegexOption.IGNORE_CASE)

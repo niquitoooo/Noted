@@ -1,7 +1,7 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -20,9 +20,9 @@ import org.jsoup.nodes.TextNode
 object NoteMarkdown {
 
     // Renglones que el editor lee como bloque propio: adjunto, tarjeta, nota y desplegable.
-    internal val ATTACHMENT_LINE = Regex("^\\[[^\\]]*]\\(jot://att/([^)]+)\\)$")
-    internal val BOOKMARK_MARKER = Regex("^<!--\\s*jot:bookmark\\s+(\\S+)\\s*-->$")
-    internal val NOTE_LINE = Regex("^\\[[^\\]]*]\\(jot://note/([^)]+)\\)$")
+    internal val ATTACHMENT_LINE = Regex("^\\[[^\\]]*]\\(noted://att/([^)]+)\\)$")
+    internal val BOOKMARK_MARKER = Regex("^<!--\\s*noted:bookmark\\s+(\\S+)\\s*-->$")
+    internal val NOTE_LINE = Regex("^\\[[^\\]]*]\\(noted://note/([^)]+)\\)$")
     internal val DETAILS_OPEN = Regex("^<details(\\s+open)?>$", RegexOption.IGNORE_CASE)
     internal val SUMMARY = Regex("^<summary>(.*)</summary>$", RegexOption.IGNORE_CASE)
     internal val DETAILS_CLOSE = Regex("^</details>$", RegexOption.IGNORE_CASE)
@@ -61,12 +61,12 @@ object NoteMarkdown {
             .replace("]", "］")
             .replace(")", "）")
             .replace("\n", " ")
-        return "[$safeName](jot://att/${attachment.id})"
+        return "[$safeName](noted://att/${attachment.id})"
     }
 
     /** El renglón de una nota dentro de la nota, como lo guarda el editor. */
     fun noteLinkToken(noteId: String, title: String): String =
-        "[${noteLinkTitle(title)}](jot://note/$noteId)"
+        "[${noteLinkTitle(title)}](noted://note/$noteId)"
 
     // Formato de renglón, igual que MarkdownVisualTransformation en el editor Markdown de antes.
     private val HEADING = Regex("^(#{1,6})\\s+")
@@ -89,8 +89,8 @@ object NoteMarkdown {
     internal const val SECTION = SECTION_CLASS
     internal const val TITLE_INNER = SECTION_TITLE_INNER
     internal const val CONTENT_INNER = SECTION_CONTENT_INNER
-    internal const val PLACEHOLDER_TEXT = com.jot.app.data.html.PLACEHOLDER_TEXT
-    internal const val ATTACHMENT_URL = com.jot.app.data.html.ATTACHMENT_URL
+    internal const val PLACEHOLDER_TEXT = com.noted.app.data.html.PLACEHOLDER_TEXT
+    internal const val ATTACHMENT_URL = com.noted.app.data.html.ATTACHMENT_URL
 
     /**
      * El cuerpo en HTML. Un cuerpo vacío es un HTML vacío.
@@ -100,8 +100,8 @@ object NoteMarkdown {
      * marcador seguido de su enlace.
      *
      * Con [inlineMarks] (lo normal) se leen también las marcas que escribe [fromHtml] para lo que
-     * el Markdown no tiene: `<u>`, `<sub>`, `<sup>`, `<span class="jot-text-…">`,
-     * `<span class="jot-highlight-…">` y `==x==` (el resaltado verde). Una "\" delante hace que
+     * el Markdown no tiene: `<u>`, `<sub>`, `<sup>`, `<span class="noted-text-…">`,
+     * `<span class="noted-highlight-…">` y `==x==` (el resaltado verde). Una "\" delante hace que
      * esos mismos signos queden como texto. La migración de las notas viejas lo apaga: ahí eran texto.
      */
     fun toHtml(
@@ -528,18 +528,18 @@ object NoteMarkdown {
 
     // ---- Marcas en línea que el Markdown no tiene (subrayado, índices, colores) ----
 
-    private const val HIGHLIGHT_GREEN = "jot-highlight"
+    private const val HIGHLIGHT_GREEN = "noted-highlight"
     private val TEXT_COLOR_NAMES = listOf("red", "orange", "yellow", "green", "blue", "pink", "purple", "gray")
 
-    // El verde no lleva sufijo (`jot-highlight`): sale como `==x==`.
+    // El verde no lleva sufijo (`noted-highlight`): sale como `==x==`.
     private val HIGHLIGHT_COLOR_NAMES = TEXT_COLOR_NAMES - "green"
 
     // Las etiquetas que escribe [fromHtml], exactas; cualquier otra "<" es texto.
     private val INLINE_TAG: java.util.regex.Pattern = java.util.regex.Pattern.compile(
         "<u>|</u>|<sub>|</sub>|<sup>|</sup>|</span>" +
-            "|<span class=\"jot-text-(?:" + TEXT_COLOR_NAMES.joinToString("|") + ")\">" +
+            "|<span class=\"noted-text-(?:" + TEXT_COLOR_NAMES.joinToString("|") + ")\">" +
             "|<span class=\"" + HIGHLIGHT_GREEN + "\">" +
-            "|<span class=\"jot-highlight-(?:" + HIGHLIGHT_COLOR_NAMES.joinToString("|") + ")\">"
+            "|<span class=\"noted-highlight-(?:" + HIGHLIGHT_COLOR_NAMES.joinToString("|") + ")\">"
     )
 
     /** El largo de la etiqueta en línea que empieza en [at] (sin pasar de [to]), o 0. */
@@ -828,10 +828,10 @@ object NoteMarkdown {
      * lista queda como texto (el editor la muestra así y al guardar escapa el marcador).
      */
     private fun writeBookmark(div: Element, out: MarkdownOut) {
-        val marker = "<!-- jot:bookmark ${div.attr("data-jot-bookmark")} -->"
+        val marker = "<!-- noted:bookmark ${div.attr("data-noted-bookmark")} -->"
         val bookmarks = out.bookmarks
         if (bookmarks != null) {
-            val bookmark = bookmarks[div.attr("data-jot-bookmark")]
+            val bookmark = bookmarks[div.attr("data-noted-bookmark")]
             if (bookmark == null) {
                 out.add(marker)
                 out.addAll(blockLines(div.childNodes(), out.attachments))
@@ -852,7 +852,7 @@ object NoteMarkdown {
 
     /**
      * La sección plegable como desplegable. Se ignora lo que la app no usa: el color
-     * (`jot-section-highlight-*`), el texto de ayuda y `data-jot-section-content`.
+     * (`noted-section-highlight-*`), el texto de ayuda y `data-noted-section-content`.
      */
     private fun writeSection(section: Element, out: MarkdownOut) {
         val heading = section.childWithClass(SECTION_TITLE_WRAPPER)?.childWithClass(SECTION_TITLE)
@@ -1018,17 +1018,17 @@ object NoteMarkdown {
     /** `span` con color de texto y/o resaltado; cualquier otro `span` queda como su contenido. */
     private fun writeSpan(span: Element, out: StringBuilder) {
         val classes = span.classNames()
-        val color = TEXT_COLOR_NAMES.firstOrNull { "jot-text-$it" in classes }
+        val color = TEXT_COLOR_NAMES.firstOrNull { "noted-text-$it" in classes }
         val highlight = when {
             HIGHLIGHT_GREEN in classes -> "green"
-            else -> HIGHLIGHT_COLOR_NAMES.firstOrNull { "jot-highlight-$it" in classes }
+            else -> HIGHLIGHT_COLOR_NAMES.firstOrNull { "noted-highlight-$it" in classes }
         }
-        if (color != null) appendMark("<span class=\"jot-text-$color\">", out)
+        if (color != null) appendMark("<span class=\"noted-text-$color\">", out)
         when (highlight) {
             null -> span.childNodes().forEach { writeInline(it, out) }
             "green" -> writeEquals(span, out)
             else -> {
-                appendMark("<span class=\"jot-highlight-$highlight\">", out)
+                appendMark("<span class=\"noted-highlight-$highlight\">", out)
                 span.childNodes().forEach { writeInline(it, out) }
                 appendMark("</span>", out)
             }

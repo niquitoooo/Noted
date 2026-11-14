@@ -1,7 +1,7 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
 import org.jsoup.nodes.TextNode
@@ -10,35 +10,35 @@ import org.jsoup.nodes.TextNode
 // el campo con formato (RichHtml, HtmlBlocks): así el editor no depende del conversor.
 
 // La sección plegable.
-internal const val SECTION_CLASS = "jot-collapsible-section"
-internal const val SECTION_COLLAPSED = "jot-section-collapsed"
-internal const val SECTION_TITLE_WRAPPER = "jot-section-title-wrapper"
-internal const val SECTION_TITLE = "jot-section-title"
-internal const val SECTION_TITLE_INNER = "jot-section-title-inner"
-internal const val SECTION_CONTENT = "jot-section-content"
-internal const val SECTION_CONTENT_INNER = "jot-section-content-inner"
-private const val PLACEHOLDER = "jot-placeholder"
-private const val PLACEHOLDER_KEY = "data-jot-placeholder-key"
-internal const val PLACEHOLDER_TEXT = "data-jot-placeholder"
+internal const val SECTION_CLASS = "noted-collapsible-section"
+internal const val SECTION_COLLAPSED = "noted-section-collapsed"
+internal const val SECTION_TITLE_WRAPPER = "noted-section-title-wrapper"
+internal const val SECTION_TITLE = "noted-section-title"
+internal const val SECTION_TITLE_INNER = "noted-section-title-inner"
+internal const val SECTION_CONTENT = "noted-section-content"
+internal const val SECTION_CONTENT_INNER = "noted-section-content-inner"
+private const val PLACEHOLDER = "noted-placeholder"
+private const val PLACEHOLDER_KEY = "data-noted-placeholder-key"
+internal const val PLACEHOLDER_TEXT = "data-noted-placeholder"
 
 // Las direcciones de un adjunto y de otra nota.
-internal const val ATTACHMENT_URL = "jot://att/"
-internal const val NOTE_URL = "jot://open-note?id="
+internal const val ATTACHMENT_URL = "noted://att/"
+internal const val NOTE_URL = "noted://open-note?id="
 
 // ---- bloques propios: adjunto, tarjeta, nota y desplegable ----
 
 /** Lo que es un `<div>` del cuerpo cuando no es texto, sin mirar todavía si su id es conocido. */
 internal sealed interface DivBlock {
-    /** `div.jot-collapsible-section`. */
+    /** `div.noted-collapsible-section`. */
     data object Section : DivBlock
 
-    /** `div[data-jot-bookmark]`. */
+    /** `div[data-noted-bookmark]`. */
     data class Card(val id: String) : DivBlock
 
     /** Un `<div>` con solo `a[data-note-id]`; [title] es el texto del enlace. */
     data class NoteLink(val noteId: String, val title: String) : DivBlock
 
-    /** Un `<div>` con solo `<img src="jot://att/…">` ([image]) o `a[data-file-id]`. */
+    /** Un `<div>` con solo `<img src="noted://att/…">` ([image]) o `a[data-file-id]`. */
     data class File(val id: String, val image: Boolean) : DivBlock
 }
 
@@ -46,7 +46,7 @@ internal sealed interface DivBlock {
 internal fun divBlockOf(div: Element): DivBlock? {
     if (div.normalName() != "div") return null
     if (div.hasClass(SECTION_CLASS)) return DivBlock.Section
-    if (div.hasAttr("data-jot-bookmark")) return DivBlock.Card(div.attr("data-jot-bookmark"))
+    if (div.hasAttr("data-noted-bookmark")) return DivBlock.Card(div.attr("data-noted-bookmark"))
     val only = div.childNodes().filterNot { it is TextNode && it.isBlank }.singleOrNull() as? Element ?: return null
     return when {
         only.normalName() == "img" && only.attr("src").startsWith(ATTACHMENT_URL) ->
@@ -74,7 +74,7 @@ internal fun appendAttachment(attachment: Attachment, parent: Element) {
 /** La tarjeta de enlace con su dirección y su texto. */
 internal fun appendBookmark(id: String, href: String, text: String, parent: Element) {
     parent.appendElement("div")
-        .attr("data-jot-bookmark", id)
+        .attr("data-noted-bookmark", id)
         .appendElement("a")
         .attr("href", href)
         .appendTextIfAny(text)

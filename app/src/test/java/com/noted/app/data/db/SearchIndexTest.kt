@@ -1,7 +1,7 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.Note
+import com.noted.app.data.Note
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals

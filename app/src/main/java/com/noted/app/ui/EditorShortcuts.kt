@@ -1,11 +1,11 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.view.KeyEvent
-import com.jot.app.ui.rich.InlineFormat
+import com.noted.app.ui.rich.InlineFormat
 
 /**
  * Un atajo de teclado que el campo de texto no atiende solo y pasa al editor de la nota
- * ([com.jot.app.ui.rich.RichEditText.onShortcut]). Las teclas de cada uno están en
+ * ([com.noted.app.ui.rich.RichEditText.onShortcut]). Las teclas de cada uno están en
  * [EditorShortcuts.of].
  */
 sealed interface EditorShortcut {
@@ -30,10 +30,10 @@ sealed interface EditorShortcut {
     /** Ctrl+] y Ctrl+[: sangría de los ítems de lista. */
     data class Indent(val outdent: Boolean) : EditorShortcut
 
-    /** Color de texto (`jot-text-<color>`); `null` lo quita. */
+    /** Color de texto (`noted-text-<color>`); `null` lo quita. */
     data class TextColor(val color: String?) : EditorShortcut
 
-    /** Resaltado; `"green"` es `jot-highlight` y `null` lo quita. */
+    /** Resaltado; `"green"` es `noted-highlight` y `null` lo quita. */
     data class Highlight(val color: String?) : EditorShortcut
 
     /** Ctrl+\: quita color, resaltado y formato en línea. */

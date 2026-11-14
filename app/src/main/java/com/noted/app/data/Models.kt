@@ -1,4 +1,4 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import java.util.UUID
 
@@ -143,9 +143,9 @@ fun hiddenWithTrashedNotebooks(notes: List<Note>, trashedNotebooks: Set<String>)
     return reach(inTrashed) - visible
 }
 
-private val SEARCH_ATTACHMENT = Regex("^\\[([^\\]]*)]\\(jot://att/[^)]+\\)$")
-private val SEARCH_NOTE = Regex("^\\[[^\\]]*]\\(jot://note/[^)]+\\)$")
-private val SEARCH_BOOKMARK_MARKER = Regex("^<!--\\s*jot:bookmark\\s+\\S+\\s*-->$")
+private val SEARCH_ATTACHMENT = Regex("^\\[([^\\]]*)]\\(noted://att/[^)]+\\)$")
+private val SEARCH_NOTE = Regex("^\\[[^\\]]*]\\(noted://note/[^)]+\\)$")
+private val SEARCH_BOOKMARK_MARKER = Regex("^<!--\\s*noted:bookmark\\s+\\S+\\s*-->$")
 private val SEARCH_DETAILS = Regex("^</?details(\\s+open)?>$", RegexOption.IGNORE_CASE)
 private val SEARCH_SUMMARY = Regex("^<summary>(.*)</summary>$", RegexOption.IGNORE_CASE)
 
@@ -154,7 +154,7 @@ private val SEARCH_SUMMARY = Regex("^<summary>(.*)</summary>$", RegexOption.IGNO
  * conversión (`ConversionCheck`); para el cuerpo en HTML está `Note.plainText`.
  *
  * El cuerpo como lo ve el usuario, para buscar: sin los renglones internos
- * (`jot://…`, marcas de enlace, `<details>`). De un adjunto queda su nombre y
+ * (`noted://…`, marcas de enlace, `<details>`). De un adjunto queda su nombre y
  * de un desplegable su título. Las notas de adentro no cuentan: se encuentran por
  * su propio título, no por el de la nota que las contiene.
  */

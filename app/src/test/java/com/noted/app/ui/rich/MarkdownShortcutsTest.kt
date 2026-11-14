@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.app.Activity
 import android.content.ClipData
@@ -11,12 +11,12 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.BlockCommands
-import com.jot.app.ui.EditorBlock
-import com.jot.app.ui.EditorUndo
-import com.jot.app.ui.NoteUndo
-import com.jot.app.ui.UndoFocus
-import com.jot.app.ui.rich.RichDebug.describe
+import com.noted.app.ui.BlockCommands
+import com.noted.app.ui.EditorBlock
+import com.noted.app.ui.EditorUndo
+import com.noted.app.ui.NoteUndo
+import com.noted.app.ui.UndoFocus
+import com.noted.app.ui.rich.RichDebug.describe
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

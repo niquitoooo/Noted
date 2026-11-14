@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import androidx.compose.ui.text.TextRange
 import org.junit.Assert.assertEquals

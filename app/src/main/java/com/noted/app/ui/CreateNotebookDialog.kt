@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -71,7 +71,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.ExperimentalFoundationApi
 import coil.compose.AsyncImage
-import com.jot.app.ui.emoji.EmojiPickerSheet
+import com.noted.app.ui.emoji.EmojiPickerSheet
 
 /**
  * «Nuevo cuaderno»: título con ✕, ícono grande (la inicial

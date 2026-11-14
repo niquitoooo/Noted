@@ -1,4 +1,4 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 import android.content.Context
 import androidx.room.Database
@@ -17,7 +17,7 @@ abstract class NotesDatabase : RoomDatabase() {
 
     companion object {
         /** El archivo de la base, en `context.getDatabasePath`. */
-        const val NAME = "jot.db"
+        const val NAME = "noted.db"
 
         /** 1 → 2: tabla `notebook` para el ícono de cada cuaderno. Las notas no se tocan. */
         val MIGRATION_1_2 = object : Migration(1, 2) {

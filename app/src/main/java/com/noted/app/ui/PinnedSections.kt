@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 /**
  * Las dos secciones de la lista ("Notas fijadas" y "Todas las notas") y el

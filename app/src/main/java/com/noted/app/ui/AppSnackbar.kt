@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues

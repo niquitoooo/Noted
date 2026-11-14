@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.Editable
 import android.text.NoCopySpan

@@ -1,9 +1,9 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.searchableText
-import com.jot.app.util.stripMarkdown
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.searchableText
+import com.noted.app.util.stripMarkdown
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 
@@ -121,7 +121,7 @@ object ConversionCheck {
             } else element.attr("data-file-id")
             if (id != null && id in known) out.attachments.add(id)
         }
-        body.select("[data-jot-bookmark]").map { it.attr("data-jot-bookmark") }
+        body.select("[data-noted-bookmark]").map { it.attr("data-noted-bookmark") }
             .filterTo(out.bookmarks) { it in knownBookmarks }
         out.notes.addAll(NoteHtml.noteLinkBlockIds(html))
         out.sections = body.select(".${NoteMarkdown.SECTION}").size

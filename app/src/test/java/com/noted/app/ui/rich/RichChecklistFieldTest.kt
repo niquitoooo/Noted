@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.app.Activity
 import android.graphics.Paint
@@ -165,7 +165,7 @@ class RichChecklistFieldTest {
 
     @Test
     fun checkedItemIsStruckAndGray() {
-        val html = """<div><span class="jot-text-red">a</span> <a href="https://x.com">b</a></div>"""
+        val html = """<div><span class="noted-text-red">a</span> <a href="https://x.com">b</a></div>"""
         field.item = item(checked = true)
         set(html, cursor = 0)
         assertTrue(field.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG != 0)

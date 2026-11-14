@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -62,7 +62,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.ui.unit.Dp
 import coil.compose.AsyncImage
-import com.jot.app.data.NotesRepository
+import com.noted.app.data.NotesRepository
 import java.io.File
 
 /** Alto de la franja de portada, 188 dp. */
@@ -346,7 +346,7 @@ fun CoverAdjustDialog(
  */
 @Composable
 fun CoverHeader(
-    note: com.jot.app.data.Note,
+    note: com.noted.app.data.Note,
     cover: String,
     vm: NotesViewModel,
     onCoverClick: () -> Unit,
@@ -457,7 +457,7 @@ fun PhotoViewer(file: File, title: String, onBack: () -> Unit) {
         val mime = android.webkit.MimeTypeMap.getSingleton()
             .getMimeTypeFromExtension(file.extension.lowercase())
             ?.takeIf { it.startsWith("image/") } ?: "image/jpeg"
-        com.jot.app.data.Attachment(
+        com.noted.app.data.Attachment(
             id = "foto",
             noteId = "",
             name = title,

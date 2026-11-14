@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.graphics.Typeface
 import android.text.Spannable
@@ -54,10 +54,10 @@ class RichHtmlInlineTest {
 
     @Test
     fun linkKeepsAttributes() {
-        val html = "<div><a href=\"https://a.com\" class=\"jot-break-all\">a.com</a></div>"
+        val html = "<div><a href=\"https://a.com\" class=\"noted-break-all\">a.com</a></div>"
         assertRoundTrip(html, "p|{a=https://a.com}a.com{/a}")
         val link = RichHtml.fromHtml(html).let { it.getSpans(0, it.length, LinkMark::class.java).single() }
-        assertEquals(mapOf("class" to "jot-break-all"), link.attrs)
+        assertEquals(mapOf("class" to "noted-break-all"), link.attrs)
     }
 
     @Test
@@ -71,8 +71,8 @@ class RichHtmlInlineTest {
     @Test
     fun colorsAndHighlights() {
         assertRoundTrip(
-            "<div><span class=\"jot-text-red\">r</span><span class=\"jot-highlight\">v</span>" +
-                "<span class=\"jot-highlight-blue\">a</span></div>",
+            "<div><span class=\"noted-text-red\">r</span><span class=\"noted-highlight\">v</span>" +
+                "<span class=\"noted-highlight-blue\">a</span></div>",
             "p|{color=red}r{/color}{hl=green}v{/hl}{hl=blue}a{/hl}",
         )
     }

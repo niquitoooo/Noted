@@ -1,12 +1,12 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.text.SpannableStringBuilder
 import androidx.compose.ui.text.TextRange
-import com.jot.app.data.Attachment
-import com.jot.app.ui.rich.LineFormat
-import com.jot.app.ui.rich.RichCommands
-import com.jot.app.ui.rich.RichDebug
-import com.jot.app.ui.rich.RichText
+import com.noted.app.data.Attachment
+import com.noted.app.ui.rich.LineFormat
+import com.noted.app.ui.rich.RichCommands
+import com.noted.app.ui.rich.RichDebug
+import com.noted.app.ui.rich.RichText
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -188,7 +188,7 @@ class BlockCommandsTest {
             blocks,
             EditorFocus("c", b.id, TextRange(0, 2)),
             BarAction.Bold,
-        ) { RichCommands.toggleInline(it, com.jot.app.ui.rich.InlineFormat.Bold) }
+        ) { RichCommands.toggleInline(it, com.noted.app.ui.rich.InlineFormat.Bold) }
         assertEquals(listOf("checklist:Bb"), blockShape(blocks))
         val item = (blocks[0] as EditorBlock.Checklist).items[0]
         assertEquals("p|{b}Bb{/b}", RichDebug.describe(item.value.text))
@@ -272,7 +272,7 @@ class BlockCommandsTest {
         val blocks = mutableListOf<EditorBlock>(checklist("c", "A"), text("b", "<div>b</div>"))
         BlockCommands.insertNoteLink(blocks, BlockTree(blocks), InsertPoint("c", TextRange.Zero), "n7")
         BlockCommands.insertBookmark(blocks, BlockTree(blocks), mutableMapOf(), InsertPoint("c", TextRange.Zero),
-            com.jot.app.data.Bookmark(id = "b1", url = "https://x.com", title = "x"))
+            com.noted.app.data.Bookmark(id = "b1", url = "https://x.com", title = "x"))
         val inside = BlockCommands.insertToggle(blocks, BlockTree(blocks), InsertPoint("c", TextRange.Zero))
         assertEquals(
             // Después de la tarjeta sigue una nota, no un texto: va un texto vacío.

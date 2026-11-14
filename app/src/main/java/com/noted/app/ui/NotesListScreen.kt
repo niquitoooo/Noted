@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.app.Activity
 import android.content.Intent
@@ -100,16 +100,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.jot.app.data.Note
-import com.jot.app.data.NoteFilter
-import com.jot.app.data.label
-import com.jot.app.data.nestedNoteIds
-import com.jot.app.data.hiddenWithTrashedNotebooks
-import com.jot.app.ui.emoji.EmojiPickerSheet
-import com.jot.app.util.excerpt
-import com.jot.app.util.formatDate
-import com.jot.app.util.humanSize
-import com.jot.app.util.typeLabel
+import com.noted.app.data.Note
+import com.noted.app.data.NoteFilter
+import com.noted.app.data.label
+import com.noted.app.data.nestedNoteIds
+import com.noted.app.data.hiddenWithTrashedNotebooks
+import com.noted.app.ui.emoji.EmojiPickerSheet
+import com.noted.app.util.excerpt
+import com.noted.app.util.formatDate
+import com.noted.app.util.humanSize
+import com.noted.app.util.typeLabel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableColumn
@@ -1107,7 +1107,7 @@ private fun NoteCard(
 
 @Composable
 private fun NoteThumbnail(
-    attachment: com.jot.app.data.Attachment,
+    attachment: com.noted.app.data.Attachment,
     file: java.io.File,
     modifier: Modifier = Modifier
 ) {
@@ -1186,7 +1186,7 @@ private fun NoteThumbnail(
         ) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
-                    imageVector = com.jot.app.util.mimeIcon(attachment.mime),
+                    imageVector = com.noted.app.util.mimeIcon(attachment.mime),
                     contentDescription = typeLabel(attachment.mime),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(26.dp)

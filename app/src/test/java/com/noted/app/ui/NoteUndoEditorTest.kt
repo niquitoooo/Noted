@@ -1,14 +1,14 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.content.Context
 import androidx.compose.ui.text.TextRange
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.Note
-import com.jot.app.data.NotesRepository
-import com.jot.app.data.db.NotesDatabase
-import com.jot.app.ui.rich.RichText
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.Note
+import com.noted.app.data.NotesRepository
+import com.noted.app.data.db.NotesDatabase
+import com.noted.app.ui.rich.RichText
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

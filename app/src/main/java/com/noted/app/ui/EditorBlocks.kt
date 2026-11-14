@@ -1,18 +1,18 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.text.TextRange
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.ui.rich.RichHtml
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.TextGeometry
-import com.jot.app.ui.rich.dropTrailingNewline
-import com.jot.app.ui.rich.joinLines
-import com.jot.app.ui.rich.joinRich
-import com.jot.app.ui.rich.lineStartOf
-import com.jot.app.ui.rich.split
-import com.jot.app.ui.rich.withSelection
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.ui.rich.RichHtml
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.TextGeometry
+import com.noted.app.ui.rich.dropTrailingNewline
+import com.noted.app.ui.rich.joinLines
+import com.noted.app.ui.rich.joinRich
+import com.noted.app.ui.rich.lineStartOf
+import com.noted.app.ui.rich.split
+import com.noted.app.ui.rich.withSelection
 import java.util.UUID
 
 /**

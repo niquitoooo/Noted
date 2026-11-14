@@ -1,26 +1,26 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.html.ATTACHMENT_URL
-import com.jot.app.data.html.DivBlock
-import com.jot.app.data.html.HtmlSanitizer
-import com.jot.app.data.html.SECTION_COLLAPSED
-import com.jot.app.data.html.SECTION_CONTENT
-import com.jot.app.data.html.SECTION_CONTENT_INNER
-import com.jot.app.data.html.SECTION_TITLE
-import com.jot.app.data.html.SECTION_TITLE_INNER
-import com.jot.app.data.html.SECTION_TITLE_WRAPPER
-import com.jot.app.data.html.appendAttachment
-import com.jot.app.data.html.appendBookmark
-import com.jot.app.data.html.appendNoteLink
-import com.jot.app.data.html.appendSection
-import com.jot.app.data.html.divBlockOf
-import com.jot.app.data.html.finishSection
-import com.jot.app.data.html.noteLinkTitle
-import com.jot.app.ui.rich.DIVIDER_CHAR
-import com.jot.app.ui.rich.RichHtml
-import com.jot.app.ui.rich.RichText
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.html.ATTACHMENT_URL
+import com.noted.app.data.html.DivBlock
+import com.noted.app.data.html.HtmlSanitizer
+import com.noted.app.data.html.SECTION_COLLAPSED
+import com.noted.app.data.html.SECTION_CONTENT
+import com.noted.app.data.html.SECTION_CONTENT_INNER
+import com.noted.app.data.html.SECTION_TITLE
+import com.noted.app.data.html.SECTION_TITLE_INNER
+import com.noted.app.data.html.SECTION_TITLE_WRAPPER
+import com.noted.app.data.html.appendAttachment
+import com.noted.app.data.html.appendBookmark
+import com.noted.app.data.html.appendNoteLink
+import com.noted.app.data.html.appendSection
+import com.noted.app.data.html.divBlockOf
+import com.noted.app.data.html.finishSection
+import com.noted.app.data.html.noteLinkTitle
+import com.noted.app.ui.rich.DIVIDER_CHAR
+import com.noted.app.ui.rich.RichHtml
+import com.noted.app.ui.rich.RichText
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -176,8 +176,8 @@ internal object HtmlBlocks {
     }
 
     /**
-     * El desplegable: abierto si no tiene `jot-section-collapsed` y con el título de su `<h3>`.
-     * Se ignora lo que la app no usa: el color, el texto de ayuda y `data-jot-section-content`.
+     * El desplegable: abierto si no tiene `noted-section-collapsed` y con el título de su `<h3>`.
+     * Se ignora lo que la app no usa: el color, el texto de ayuda y `data-noted-section-content`.
      */
     private fun readSection(
         section: Element,

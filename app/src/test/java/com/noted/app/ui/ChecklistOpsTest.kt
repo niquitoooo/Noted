@@ -1,12 +1,12 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.text.SpannableStringBuilder
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.BLOCK_MARK_FLAGS
-import com.jot.app.ui.rich.HeadingMark
-import com.jot.app.ui.rich.InlineFormat
-import com.jot.app.ui.rich.RichMark
-import com.jot.app.ui.rich.RichText
+import com.noted.app.ui.rich.BLOCK_MARK_FLAGS
+import com.noted.app.ui.rich.HeadingMark
+import com.noted.app.ui.rich.InlineFormat
+import com.noted.app.ui.rich.RichMark
+import com.noted.app.ui.rich.RichText
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals

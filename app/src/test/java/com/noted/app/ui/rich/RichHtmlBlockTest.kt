@@ -1,9 +1,9 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.html.TestBodies
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.html.TestBodies
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Test

@@ -1,4 +1,4 @@
-package com.jot.app.util
+package com.noted.app.util
 
 import android.content.Context
 import android.content.Intent
@@ -71,7 +71,7 @@ fun typeLabel(mime: String): String = when {
 }
 
 fun stripMarkdown(markdown: String): String = markdown
-    .replace(Regex("<!--\\s*jot:bookmark\\s+\\S+\\s*-->"), " ")
+    .replace(Regex("<!--\\s*noted:bookmark\\s+\\S+\\s*-->"), " ")
     .replace(Regex("</?(?:details|summary)[^>]*>"), " ")
     .replace(Regex("!\\[[^\\]]*]\\([^)]*\\)"), " ")
     .replace(Regex("\\[([^\\]]*)]\\([^)]*\\)"), "$1")

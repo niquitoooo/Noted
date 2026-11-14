@@ -1,10 +1,10 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.Note
-import com.jot.app.data.NotesJson
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.Note
+import com.noted.app.data.NotesJson
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals

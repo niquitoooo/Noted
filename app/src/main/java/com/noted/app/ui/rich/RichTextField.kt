@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.content.Context
 import android.view.View
@@ -35,7 +35,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.AccessibilityDelegateCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
-import com.jot.app.ui.EditorShortcut
+import com.noted.app.ui.EditorShortcut
 
 /**
  * Recibe las imágenes o videos que llegan a un campo de la nota abierta ([RichEditText.onMedia]).

@@ -1,4 +1,4 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
 /** Cuerpos de prueba compartidos entre los tests del conversor. */
 internal object TestBodies {
@@ -37,8 +37,8 @@ internal object TestBodies {
         "```",
         "---",
         "##### Enlaces",
-        "Ver [la página](https://es.wikipedia.org/wiki/Mate_(bebida)) y [otra](jot://note/7).",
-        "\\[nota](jot://note/1)",
+        "Ver [la página](https://es.wikipedia.org/wiki/Mate_(bebida)) y [otra](noted://note/7).",
+        "\\[nota](noted://note/1)",
         "\\- no es lista",
         "###### Fin",
         "a < b && \"c\" 'd' &amp;",

@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
@@ -98,13 +98,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
-import com.jot.app.R
-import com.jot.app.data.Attachment
-import com.jot.app.util.humanSize
-import com.jot.app.util.mimeIcon
-import com.jot.app.util.openExternally
-import com.jot.app.util.shareFile
-import com.jot.app.util.typeLabel
+import com.noted.app.R
+import com.noted.app.data.Attachment
+import com.noted.app.util.humanSize
+import com.noted.app.util.mimeIcon
+import com.noted.app.util.openExternally
+import com.noted.app.util.shareFile
+import com.noted.app.util.typeLabel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

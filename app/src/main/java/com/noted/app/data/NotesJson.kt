@@ -1,4 +1,4 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import org.json.JSONArray
 import org.json.JSONObject

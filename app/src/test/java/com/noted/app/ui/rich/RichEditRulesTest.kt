@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.graphics.Typeface
 import android.text.Editable
@@ -10,10 +10,10 @@ import android.text.style.StyleSpan
 import android.text.style.SuggestionSpan
 import android.text.style.UnderlineSpan
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.RichDebug.describe
-import com.jot.app.ui.rich.RichDebug.edit
-import com.jot.app.ui.rich.RichDebug.editResult
-import com.jot.app.ui.rich.RichDebug.type
+import com.noted.app.ui.rich.RichDebug.describe
+import com.noted.app.ui.rich.RichDebug.edit
+import com.noted.app.ui.rich.RichDebug.editResult
+import com.noted.app.ui.rich.RichDebug.type
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull

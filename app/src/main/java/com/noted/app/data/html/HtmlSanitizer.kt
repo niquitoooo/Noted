@@ -1,4 +1,4 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Attribute
@@ -36,7 +36,7 @@ object HtmlSanitizer {
         "strong" to "b", "em" to "i", "del" to "s",
     )
 
-    // Sin protocolos declarados, jsoup deja pasar cualquier esquema (jot://).
+    // Sin protocolos declarados, jsoup deja pasar cualquier esquema (noted://).
     // ALLOW_DATA_ATTR: jsoup no admite comodines, así que los data-* se aceptan a mano.
     private val safelist: Safelist = object : Safelist() {
         override fun isSafeAttribute(tagName: String, el: Element, attr: Attribute): Boolean =
@@ -135,12 +135,12 @@ object HtmlSanitizer {
             children.forEach { inner.appendChild(it) }
         }
         style["color"]?.let(::parseColor)?.let { color ->
-            TEXT_COLORS.entries.firstOrNull { color in it.value }?.let { span.addClass("jot-text-${it.key}") }
+            TEXT_COLORS.entries.firstOrNull { color in it.value }?.let { span.addClass("noted-text-${it.key}") }
         }
         val background = style["background-color"]?.let(::parseColor) ?: style["background"]?.let(::shorthandColor)
         background?.let { color ->
             HIGHLIGHT_COLORS.entries.firstOrNull { color in it.value }?.let {
-                span.addClass(if (it.key == "green") "jot-highlight" else "jot-highlight-${it.key}")
+                span.addClass(if (it.key == "green") "noted-highlight" else "noted-highlight-${it.key}")
             }
         }
     }

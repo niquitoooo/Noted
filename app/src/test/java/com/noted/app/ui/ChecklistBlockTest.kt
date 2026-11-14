@@ -1,7 +1,7 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.RichText
+import com.noted.app.ui.rich.RichText
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith

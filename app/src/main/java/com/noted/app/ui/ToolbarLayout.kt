@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 /**
  * Un botón de la barra del editor. [key] es lo que se guarda: no cambia aunque cambie el nombre.

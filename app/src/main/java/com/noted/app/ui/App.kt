@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -83,7 +83,7 @@ private val RouteSaver = Saver<Route, ArrayList<String>>(
 private const val NO_MEDIA_IDS = "\u0000"
 
 @Composable
-fun JotApp(vm: NotesViewModel) {
+fun NotedApp(vm: NotesViewModel) {
     val notes by vm.notes.collectAsStateWithLifecycle()
     val pending by vm.pendingNote.collectAsStateWithLifecycle()
     var route by rememberSaveable(stateSaver = RouteSaver) { mutableStateOf<Route>(Route.List) }

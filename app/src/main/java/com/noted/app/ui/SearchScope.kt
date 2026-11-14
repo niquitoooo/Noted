@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,9 +32,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.jot.app.data.Note
-import com.jot.app.data.NoteFilter
-import com.jot.app.data.label
+import com.noted.app.data.Note
+import com.noted.app.data.NoteFilter
+import com.noted.app.data.label
 import java.io.File
 
 /** Nombre del lugar «Notas» (las notas sin cuaderno) dentro de [SearchScope.places]. */

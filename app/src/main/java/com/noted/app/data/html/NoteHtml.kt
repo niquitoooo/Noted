@@ -1,8 +1,8 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Note
-import com.jot.app.data.NotesRepository
+import com.noted.app.data.Attachment
+import com.noted.app.data.Note
+import com.noted.app.data.NotesRepository
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.Node
@@ -26,7 +26,7 @@ object NoteHtml {
     private const val FILE_LINK = "a[data-file-id]"
 
     // Las direcciones propias de la app (adjuntos y notas), que no son para buscar.
-    private val INTERNAL_URLS = listOf("jot://")
+    private val INTERNAL_URLS = listOf("noted://")
 
     /**
      * El cuerpo como texto, un renglón por bloque, con el mismo criterio que

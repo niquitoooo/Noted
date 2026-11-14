@@ -1,4 +1,4 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -40,16 +40,16 @@ class HtmlSanitizerTest {
             """<div data-checked="true">a</div>""",
             """<a data-note-id="n1" data-non-editable="true" href="x">t</a>""",
             """<a data-file-id="f1" data-non-editable="true" href="x">t</a>""",
-            """<div data-jot-bookmark="b1"><a href="x">t</a></div>""",
+            """<div data-noted-bookmark="b1"><a href="x">t</a></div>""",
         ).joinToString("")
         assertEquals(html, HtmlSanitizer.clean(html))
     }
 
     @Test
     fun keepsCustomSchemes() {
-        val html = """<div><a href="jot://att/1">f</a></div>""" +
-            """<div><a href="jot://open-note?id=2">n</a></div>""" +
-            """<div><img src="jot://att/3"></div>"""
+        val html = """<div><a href="noted://att/1">f</a></div>""" +
+            """<div><a href="noted://open-note?id=2">n</a></div>""" +
+            """<div><img src="noted://att/3"></div>"""
         assertEquals(html, HtmlSanitizer.clean(html))
     }
 
@@ -90,8 +90,8 @@ class HtmlSanitizerTest {
     fun keepsSafeUrls() {
         val html = """<div><a href="https://example.com/a?b=1">a</a></div>""" +
             """<div><a href="mailto:a@b.com">m</a></div>""" +
-            """<div><a href="jot://att/1">f</a></div>""" +
-            """<div><a href="jot://open-note?id=2">n</a></div>"""
+            """<div><a href="noted://att/1">f</a></div>""" +
+            """<div><a href="noted://open-note?id=2">n</a></div>"""
         assertEquals(html, HtmlSanitizer.clean(html))
     }
 
@@ -102,12 +102,12 @@ class HtmlSanitizerTest {
 
     @Test
     fun keepsCollapsibleSectionUntouched() {
-        val html = """<div class="jot-collapsible-section jot-section-collapsed">""" +
-            """<div class="jot-section-title-wrapper">""" +
-            """<div class="jot-section-title jot-placeholder" data-jot-placeholder-key="title" data-jot-placeholder="Title">""" +
-            """<div class="jot-section-title-inner"><h3>T</h3></div></div></div>""" +
-            """<div class="jot-section-content jot-placeholder" data-jot-placeholder-key="content">""" +
-            """<div class="jot-section-content-inner"><div>x</div></div></div></div>"""
+        val html = """<div class="noted-collapsible-section noted-section-collapsed">""" +
+            """<div class="noted-section-title-wrapper">""" +
+            """<div class="noted-section-title noted-placeholder" data-noted-placeholder-key="title" data-noted-placeholder="Title">""" +
+            """<div class="noted-section-title-inner"><h3>T</h3></div></div></div>""" +
+            """<div class="noted-section-content noted-placeholder" data-noted-placeholder-key="content">""" +
+            """<div class="noted-section-content-inner"><div>x</div></div></div></div>"""
         assertEquals(html, HtmlSanitizer.clean(html))
     }
 
@@ -161,7 +161,7 @@ class HtmlSanitizerTest {
         )
         // Un enlace a nota sin href se rearma.
         assertEquals(
-            """<div><a data-note-id="n1" href="jot://open-note?id=n1">t</a></div>""",
+            """<div><a data-note-id="n1" href="noted://open-note?id=n1">t</a></div>""",
             HtmlSanitizer.cleanPasted("""<div><a data-note-id="n1">t</a></div>"""),
         )
     }
@@ -191,15 +191,15 @@ class HtmlSanitizerTest {
     fun imagesAreDropped() {
         assertEquals(
             "<div>ab</div>",
-            HtmlSanitizer.cleanPasted("""<div>a<img src="https://x.com/y.png" height="10">b</div><img src="jot://att/1">"""),
+            HtmlSanitizer.cleanPasted("""<div>a<img src="https://x.com/y.png" height="10">b</div><img src="noted://att/1">"""),
         )
     }
 
     @Test
     fun paletteColorSpanBecomesClass() {
         assertEquals(
-            """<div><span class="jot-text-red">a</span><span class="jot-highlight">b</span>""" +
-                """<span class="jot-highlight-blue">c</span><span class="jot-text-blue"><b>d</b></span>ef</div>""",
+            """<div><span class="noted-text-red">a</span><span class="noted-highlight">b</span>""" +
+                """<span class="noted-highlight-blue">c</span><span class="noted-text-blue"><b>d</b></span>ef</div>""",
             HtmlSanitizer.cleanPasted(
                 """<div><span style="color: #F9241C">a</span>""" +
                     """<span style="background-color: rgb(231, 255, 205)">b</span>""" +
@@ -238,7 +238,7 @@ class HtmlSanitizerTest {
     @Test
     fun backgroundShorthandColor() {
         assertEquals(
-            """<span class="jot-highlight-red">a</span><span class="jot-highlight-blue">b</span>""",
+            """<span class="noted-highlight-red">a</span><span class="noted-highlight-blue">b</span>""",
             HtmlSanitizer.cleanPasted(
                 """<span style="background: rgb(254, 222, 222) none repeat scroll 0% 0%">a</span>""" +
                     """<span style="background: none #D8ECFD">b</span>""",

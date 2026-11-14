@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.app.Activity
 import android.content.ClipboardManager
@@ -184,31 +184,31 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import coil.size.Dimension
 import coil.size.Size
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.Note
-import com.jot.app.data.NotesRepository
-import com.jot.app.data.html.NoteHtml
-import com.jot.app.ui.emoji.EmojiPickerSheet
-import com.jot.app.ui.rich.ARROW_EDGE_END
-import com.jot.app.ui.rich.DIVIDER_CHAR
-import com.jot.app.ui.rich.InlineFormat
-import com.jot.app.ui.rich.LocalReceiveMedia
-import com.jot.app.ui.rich.LineFormat
-import com.jot.app.ui.rich.BarFormat
-import com.jot.app.ui.rich.RichCommands
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.RichTextField
-import com.jot.app.ui.rich.TextGeometry
-import com.jot.app.ui.rich.releaseRichField
-import com.jot.app.ui.rich.rememberRichStyle
-import com.jot.app.ui.rich.withEmptyLineAtEnd
-import com.jot.app.ui.rich.withSelection
-import com.jot.app.util.formatDate
-import com.jot.app.util.humanSize
-import com.jot.app.util.mimeIcon
-import com.jot.app.util.shareText
-import com.jot.app.util.typeLabel
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.Note
+import com.noted.app.data.NotesRepository
+import com.noted.app.data.html.NoteHtml
+import com.noted.app.ui.emoji.EmojiPickerSheet
+import com.noted.app.ui.rich.ARROW_EDGE_END
+import com.noted.app.ui.rich.DIVIDER_CHAR
+import com.noted.app.ui.rich.InlineFormat
+import com.noted.app.ui.rich.LocalReceiveMedia
+import com.noted.app.ui.rich.LineFormat
+import com.noted.app.ui.rich.BarFormat
+import com.noted.app.ui.rich.RichCommands
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.RichTextField
+import com.noted.app.ui.rich.TextGeometry
+import com.noted.app.ui.rich.releaseRichField
+import com.noted.app.ui.rich.rememberRichStyle
+import com.noted.app.ui.rich.withEmptyLineAtEnd
+import com.noted.app.ui.rich.withSelection
+import com.noted.app.util.formatDate
+import com.noted.app.util.humanSize
+import com.noted.app.util.mimeIcon
+import com.noted.app.util.shareText
+import com.noted.app.util.typeLabel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -901,7 +901,7 @@ fun NoteEditorScreen(
     fun openBookmark(url: String) {
         runCatching {
             // Los enlaces viejos pueden no tener "https://" ("www.google.com").
-            val target = com.jot.app.data.BookmarkFetcher.normalize(url)
+            val target = com.noted.app.data.BookmarkFetcher.normalize(url)
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(target)))
         }
     }
@@ -2098,7 +2098,7 @@ private fun barTransform(action: BarAction): (RichText) -> RichText = when (acti
     BarAction.Divider -> RichCommands::insertDivider
 }
 
-/** Ctrl+Z deshace y Ctrl+Shift+Z y Ctrl+Y rehacen, como en [com.jot.app.ui.rich.RichEditText]. */
+/** Ctrl+Z deshace y Ctrl+Shift+Z y Ctrl+Y rehacen, como en [com.noted.app.ui.rich.RichEditText]. */
 private fun editorShortcutOf(event: KeyEvent): EditorShortcut? = when {
     !event.isCtrlPressed || event.isAltPressed -> null
     event.key == Key.Z && !event.isShiftPressed -> EditorShortcut.Undo

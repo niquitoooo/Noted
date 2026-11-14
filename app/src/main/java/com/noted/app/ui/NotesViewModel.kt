@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.app.Application
 import android.net.Uri
@@ -10,15 +10,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.Note
-import com.jot.app.data.NoteFilter
-import com.jot.app.data.NotesRepository
-import com.jot.app.data.NoteIO
-import com.jot.app.data.containerOf
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.nestedNoteIds
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.Note
+import com.noted.app.data.NoteFilter
+import com.noted.app.data.NotesRepository
+import com.noted.app.data.NoteIO
+import com.noted.app.data.containerOf
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.nestedNoteIds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -55,7 +55,7 @@ class NotesViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private val preferences =
-        application.getSharedPreferences("jot", android.content.Context.MODE_PRIVATE)
+        application.getSharedPreferences("noted", android.content.Context.MODE_PRIVATE)
 
     private val _toolbarLayout = MutableStateFlow(
         ToolbarLayout.parse(
@@ -373,7 +373,7 @@ class NotesViewModel(application: Application) : AndroidViewModel(application) {
 
     fun consumePending() { _pendingNote.value = null }
 
-    fun attachmentFile(attachment: com.jot.app.data.Attachment): File =
+    fun attachmentFile(attachment: com.noted.app.data.Attachment): File =
         repository.attachmentFile(attachment)
 
     fun bookmarkImageFile(bookmark: Bookmark): File? =

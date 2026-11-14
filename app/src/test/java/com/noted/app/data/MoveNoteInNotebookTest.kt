@@ -1,9 +1,9 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.db.NotesDatabase
-import com.jot.app.ui.PinnedSections
+import com.noted.app.data.db.NotesDatabase
+import com.noted.app.ui.PinnedSections
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -23,7 +23,7 @@ class MoveNoteInNotebookTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         context.filesDir.listFiles()?.forEach { it.deleteRecursively() }
-        context.getSharedPreferences("jot", Context.MODE_PRIVATE).edit().clear().commit()
+        context.getSharedPreferences("noted", Context.MODE_PRIVATE).edit().clear().commit()
         db = NotesDatabase.inMemory(context)
     }
 

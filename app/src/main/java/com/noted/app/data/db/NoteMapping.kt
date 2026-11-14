@@ -1,7 +1,7 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
-import com.jot.app.data.Note
-import com.jot.app.data.NotesJson
+import com.noted.app.data.Note
+import com.noted.app.data.NotesJson
 import org.json.JSONArray
 
 fun Note.toEntity(): NoteEntity = NoteEntity(

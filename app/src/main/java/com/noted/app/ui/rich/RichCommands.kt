@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableStringBuilder
 import androidx.compose.ui.text.TextRange
@@ -275,7 +275,7 @@ object RichCommands {
     fun setTextColor(value: RichText, color: String?): RichText = setColor(value, color, highlight = false)
 
     /**
-     * Resaltado (Ctrl+Shift+Alt+1…8; `"green"` es `jot-highlight`; `null` lo quita),
+     * Resaltado (Ctrl+Shift+Alt+1…8; `"green"` es `noted-highlight`; `null` lo quita),
      * con las mismas reglas que [setTextColor].
      */
     fun setHighlight(value: RichText, color: String?): RichText = setColor(value, color, highlight = true)

@@ -1,12 +1,12 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.db.NotesDao
-import com.jot.app.data.db.NotesDatabase
-import com.jot.app.data.db.NoteEntity
-import com.jot.app.data.db.NoteHistoryEntity
+import com.noted.app.data.db.NotesDao
+import com.noted.app.data.db.NotesDatabase
+import com.noted.app.data.db.NoteEntity
+import com.noted.app.data.db.NoteHistoryEntity
 import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONObject
@@ -39,7 +39,7 @@ class HtmlMigrationTest {
         filesDir = folder.newFolder("files")
         db = NotesDatabase.inMemory(context)
         dao = db.dao()
-        prefs = context.getSharedPreferences("jot", Context.MODE_PRIVATE)
+        prefs = context.getSharedPreferences("noted", Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
     }
 
@@ -61,7 +61,7 @@ class HtmlMigrationTest {
     private fun migration(
         databaseExisted: Boolean = true,
         verify: (String, String, List<Attachment>, List<Bookmark>) -> List<String> =
-            com.jot.app.data.html.ConversionCheck::verify,
+            com.noted.app.data.html.ConversionCheck::verify,
     ) = HtmlMigration(filesDir, dao, prefs, databaseExisted, verify)
 
     @Test
@@ -73,7 +73,7 @@ class HtmlMigrationTest {
         assertEquals(HtmlMigration.Report(3, emptyList()), report)
         val rows = dao.all().associateBy { it.id }
         assertEquals(3, rows.size)
-        assertEquals(com.jot.app.data.html.NoteMarkdown.toHtml("hola **mundo**", emptyList(), emptyList()), rows.getValue("n1").html)
+        assertEquals(com.noted.app.data.html.NoteMarkdown.toHtml("hola **mundo**", emptyList(), emptyList()), rows.getValue("n1").html)
         assertTrue(rows.getValue("n1").html.startsWith("<div>"))
         assertEquals("hola mundo", rows.getValue("n1").summary)
         assertTrue(rows.getValue("n2").hasTodo)
@@ -124,7 +124,7 @@ class HtmlMigrationTest {
 
     @Test
     fun crashingNoteIsKeptAsTextLines() = runTest {
-        val body = "<b>a & b</b> \"comillas\"\n\n  - [ ] con sangría\r\n\\[x](jot://att/zz)\n"
+        val body = "<b>a & b</b> \"comillas\"\n\n  - [ ] con sangría\r\n\\[x](noted://att/zz)\n"
         File(filesDir, "notes.json").writeText(json(
             Note(id = "n1", title = "Rota", body = body, sortOrder = 0L),
             Note(id = "n2", title = "Sana", body = "hola", sortOrder = 1L),
@@ -132,7 +132,7 @@ class HtmlMigrationTest {
 
         val report = migration { md, html, attachments, bookmarks ->
             if (md == body) throw IllegalStateException("se cayó")
-            com.jot.app.data.html.ConversionCheck.verify(md, html, attachments, bookmarks)
+            com.noted.app.data.html.ConversionCheck.verify(md, html, attachments, bookmarks)
         }.runIfNeeded()
 
         assertEquals(HtmlMigration.Report(2, listOf("Rota")), report)

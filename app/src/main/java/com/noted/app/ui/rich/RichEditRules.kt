@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.Editable
 import android.text.NoCopySpan
@@ -7,7 +7,7 @@ import android.text.style.CharacterStyle
 import android.text.style.ParagraphStyle
 import android.text.style.SuggestionSpan
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.RichCommands.isFormat
+import com.noted.app.ui.rich.RichCommands.isFormat
 
 /**
  * Lo mínimo del teclado sobre el texto con formato (tabla "Qué entra del teclado en este

@@ -1,10 +1,10 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.html.TestBodies
-import com.jot.app.ui.rich.RichDebug
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.html.TestBodies
+import com.noted.app.ui.rich.RichDebug
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Test
@@ -38,10 +38,10 @@ class HtmlBlocksTest {
     private val bookmarks = listOf(mate)
     private val titles = mapOf("n7" to "Receta [de] (mamá)")
 
-    private val photoHtml = "<div><img src=\"jot://att/p1\"></div>"
+    private val photoHtml = "<div><img src=\"noted://att/p1\"></div>"
     private val reportHtml = "<div><a data-file-id=\"f1\" data-non-editable=\"true\" " +
-        "href=\"jot://att/f1\">informe (final).pdf</a></div>"
-    private val cardHtml = "<div data-jot-bookmark=\"b1\"><a href=\"https://x.com/a(b)\">Mate [rico]</a></div>"
+        "href=\"noted://att/f1\">informe (final).pdf</a></div>"
+    private val cardHtml = "<div data-noted-bookmark=\"b1\"><a href=\"https://x.com/a(b)\">Mate [rico]</a></div>"
 
     private fun parse(html: String, attachments: List<Attachment> = this.attachments, bookmarks: List<Bookmark> = this.bookmarks) =
         HtmlBlocks.parse(html, attachments, bookmarks)
@@ -52,13 +52,13 @@ class HtmlBlocksTest {
     private fun shape(blocks: List<EditorBlock>): List<String> = blockShape(blocks)
 
     private fun section(title: String, content: String, open: Boolean = true): String {
-        val collapsed = if (open) "" else " jot-section-collapsed"
-        return "<div class=\"jot-collapsible-section$collapsed\">" +
-            "<div class=\"jot-section-title-wrapper\">" +
-            "<div class=\"jot-section-title jot-placeholder\" data-jot-placeholder-key=\"title\">" +
-            "<div class=\"jot-section-title-inner\"><h3>$title</h3></div></div></div>" +
-            "<div class=\"jot-section-content jot-placeholder\" data-jot-placeholder-key=\"content\">" +
-            "<div class=\"jot-section-content-inner\">$content</div></div></div>"
+        val collapsed = if (open) "" else " noted-section-collapsed"
+        return "<div class=\"noted-collapsible-section$collapsed\">" +
+            "<div class=\"noted-section-title-wrapper\">" +
+            "<div class=\"noted-section-title noted-placeholder\" data-noted-placeholder-key=\"title\">" +
+            "<div class=\"noted-section-title-inner\"><h3>$title</h3></div></div></div>" +
+            "<div class=\"noted-section-content noted-placeholder\" data-noted-placeholder-key=\"content\">" +
+            "<div class=\"noted-section-content-inner\">$content</div></div></div>"
     }
 
     @Test
@@ -66,14 +66,14 @@ class HtmlBlocksTest {
         val bodies = listOf(
             TestBodies.canonicalMarkdown,
             "",
-            "[foto.jpg](jot://att/p1)",
-            "a\n[foto.jpg](jot://att/p1)\nb",
-            "[informe (final）.pdf](jot://att/f1)",
-            "\\[a](jot://att/7)",
-            "[Receta [de］ (mamá)](jot://note/n7)",
-            "antes\n<!-- jot:bookmark b1 -->\n[Mate [rico］](https://x.com/a(b）)\ndespués",
-            "> a\n[foto.jpg](jot://att/p1)\n\n[foto.jpg](jot://att/p1)",
-            "1. a\n[foto.jpg](jot://att/p1)\n2. b",
+            "[foto.jpg](noted://att/p1)",
+            "a\n[foto.jpg](noted://att/p1)\nb",
+            "[informe (final）.pdf](noted://att/f1)",
+            "\\[a](noted://att/7)",
+            "[Receta [de］ (mamá)](noted://note/n7)",
+            "antes\n<!-- noted:bookmark b1 -->\n[Mate [rico］](https://x.com/a(b）)\ndespués",
+            "> a\n[foto.jpg](noted://att/p1)\n\n[foto.jpg](noted://att/p1)",
+            "1. a\n[foto.jpg](noted://att/p1)\n2. b",
             "<details open>\n<summary>T</summary>\n</details>",
             "<details open>\n<summary>a &amp; &lt;b&gt;</summary>\nx\n</details>",
             listOf(
@@ -82,12 +82,12 @@ class HtmlBlocksTest {
                 "<summary>Afuera</summary>",
                 "- uno",
                 "  - dos",
-                "[foto.jpg](jot://att/p1)",
+                "[foto.jpg](noted://att/p1)",
                 "1. tres",
                 "<details>",
                 "<summary>Adentro</summary>",
                 "- [x] cuatro",
-                "[informe (final）.pdf](jot://att/f1)",
+                "[informe (final）.pdf](noted://att/f1)",
                 "<details open>",
                 "<summary>Más adentro</summary>",
                 "cinco",
@@ -103,8 +103,8 @@ class HtmlBlocksTest {
             // Como canonicalBodyRoundTrip: sin espacios dobles no hay U+00A0 que agregar.
             assertFalse(html.contains("  "))
             // Solo los que el cuerpo nombra: los demás se agregan al final (unreferencedAttachmentsGoLast).
-            val named = attachments.filter { "jot://att/${it.id}" in html }
-            val cards = bookmarks.filter { "data-jot-bookmark=\"${it.id}\"" in html }
+            val named = attachments.filter { "noted://att/${it.id}" in html }
+            val cards = bookmarks.filter { "data-noted-bookmark=\"${it.id}\"" in html }
             val blocks = HtmlBlocks.parse(html, named, cards)
             assertEquals(markdown, html, HtmlBlocks.serialize(blocks, named, cards, titles))
         }
@@ -125,20 +125,20 @@ class HtmlBlocksTest {
 
     @Test
     fun unknownImageStaysAsLink() {
-        val blocks = parse("<div><img src=\"jot://att/7\"></div>", emptyList(), emptyList())
-        assertEquals(listOf("text:p|{a=jot://att/7}7{/a}"), shape(blocks))
-        assertEquals("<div><a href=\"jot://att/7\">7</a></div>", HtmlBlocks.serialize(blocks, emptyList(), emptyList(), emptyMap()))
+        val blocks = parse("<div><img src=\"noted://att/7\"></div>", emptyList(), emptyList())
+        assertEquals(listOf("text:p|{a=noted://att/7}7{/a}"), shape(blocks))
+        assertEquals("<div><a href=\"noted://att/7\">7</a></div>", HtmlBlocks.serialize(blocks, emptyList(), emptyList(), emptyMap()))
     }
 
     @Test
     fun unknownCardAndFileStayAsTextWithTheirLink() {
         val blocks = parse(
-            "<div data-jot-bookmark=\"b9\"><a href=\"https://x.com\">t</a></div>" +
-                "<div><a data-file-id=\"7\" href=\"jot://att/7\">a</a></div>",
+            "<div data-noted-bookmark=\"b9\"><a href=\"https://x.com\">t</a></div>" +
+                "<div><a data-file-id=\"7\" href=\"noted://att/7\">a</a></div>",
             emptyList(),
             emptyList(),
         )
-        assertEquals(listOf("text:p|{a=https://x.com}t{/a}\np|{a=jot://att/7}a{/a}"), shape(blocks))
+        assertEquals(listOf("text:p|{a=https://x.com}t{/a}\np|{a=noted://att/7}a{/a}"), shape(blocks))
     }
 
     @Test
@@ -191,7 +191,7 @@ class HtmlBlocksTest {
     @Test
     fun noteLinkUsesCurrentTitle() {
         val html = "<div><a data-note-id=\"n7\" data-non-editable=\"true\" " +
-            "href=\"jot://open-note?id=n7\">Vieja</a></div>"
+            "href=\"noted://open-note?id=n7\">Vieja</a></div>"
         val blocks = parse(html, emptyList(), emptyList())
         assertEquals(listOf("text:", "note:n7", "text:"), shape(blocks))
         assertEquals(html.replace("Vieja", "Nueva"), save(blocks, mapOf("n7" to "Nueva")))
@@ -204,10 +204,10 @@ class HtmlBlocksTest {
         val markdown = listOf(
             "- [ ] leche",
             "**b**",
-            "[foto.jpg](jot://att/p1)",
-            "<!-- jot:bookmark b1 -->",
+            "[foto.jpg](noted://att/p1)",
+            "<!-- noted:bookmark b1 -->",
             "[Mate [rico］](https://x.com/a(b）)",
-            "[x](jot://note/n7)",
+            "[x](noted://note/n7)",
             "<details open>",
             "<summary>T</summary>",
             "adentro",

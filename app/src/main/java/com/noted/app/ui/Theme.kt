@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -100,7 +100,7 @@ private val DarkColors = darkColorScheme(
     onErrorContainer = Color(0xFFF9DEDC)
 )
 
-private val JotShapes = Shapes(
+private val NotedShapes = Shapes(
     extraSmall = RoundedCornerShape(6.dp),
     small = RoundedCornerShape(10.dp),
     medium = RoundedCornerShape(16.dp),
@@ -109,7 +109,7 @@ private val JotShapes = Shapes(
 )
 
 @Composable
-fun JotTheme(
+fun NotedTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
@@ -125,7 +125,7 @@ fun JotTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        shapes = JotShapes,
+        shapes = NotedShapes,
         content = content
     )
 }

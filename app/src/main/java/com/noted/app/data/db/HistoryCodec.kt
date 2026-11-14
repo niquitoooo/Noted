@@ -1,4 +1,4 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 import java.io.ByteArrayOutputStream
 import java.util.zip.Deflater

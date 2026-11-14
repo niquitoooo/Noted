@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.graphics.Bitmap
 import android.graphics.Color

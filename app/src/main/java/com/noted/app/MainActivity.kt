@@ -1,4 +1,4 @@
-package com.jot.app
+package com.noted.app
 
 import android.content.Intent
 import android.net.Uri
@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.jot.app.ui.NotesViewModel
-import com.jot.app.ui.JotApp
-import com.jot.app.ui.JotTheme
+import com.noted.app.ui.NotesViewModel
+import com.noted.app.ui.NotedApp
+import com.noted.app.ui.NotedTheme
 
 class MainActivity : ComponentActivity() {
 
@@ -28,12 +28,12 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            JotTheme {
+            NotedTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    JotApp(viewModel)
+                    NotedApp(viewModel)
                 }
             }
         }

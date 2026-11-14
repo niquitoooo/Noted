@@ -1,9 +1,9 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.RichDebug.describe
+import com.noted.app.ui.rich.RichDebug.describe
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -237,7 +237,7 @@ class RichPasteTest {
         assertEquals("p|a{a=https://x.com}https://x.com{/a}", describe(text))
         assertEquals(14, at)
         assertEquals(
-            """<div>a<a href="https://x.com" class="jot-break-all" spellcheck="false">https://x.com</a></div>""",
+            """<div>a<a href="https://x.com" class="noted-break-all" spellcheck="false">https://x.com</a></div>""",
             RichHtml.toHtml(text),
         )
     }

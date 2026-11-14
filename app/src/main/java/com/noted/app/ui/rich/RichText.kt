@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableString
 import android.text.Spanned
@@ -11,7 +11,7 @@ enum class InlineFormat { Bold, Italic, Strike, Code, Underline, Subscript, Supe
 /**
  * El color de texto y el resaltado pedidos sin selección para lo próximo que se escriba
  *. [text] y [highlight] son el color que toma ([highlight] `"green"` es el verde,
- * `jot-highlight`); [clearText] y [clearHighlight], que lo escrito va sin ese color aunque lo
+ * `noted-highlight`); [clearText] y [clearHighlight], que lo escrito va sin ese color aunque lo
  * tenga lo de al lado ("Sin color" corta desde el cursor).
  */
 data class PendingColor(val text: String?, val highlight: String?, val clearText: Boolean, val clearHighlight: Boolean)

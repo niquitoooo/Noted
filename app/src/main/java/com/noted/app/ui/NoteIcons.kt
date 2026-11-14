@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
@@ -78,8 +78,8 @@ import androidx.compose.ui.unit.dp
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
-import com.jot.app.data.Note
-import com.jot.app.data.NotesRepository
+import com.noted.app.data.Note
+import com.noted.app.data.NotesRepository
 import java.io.File
 
 /** Íconos incluidos para elegir en la lista de notas. La clave se guarda en la nota. */

@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.util.Log
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -40,8 +40,8 @@ import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
-import com.jot.app.ui.rich.ItemShortcut
-import com.jot.app.ui.rich.TextGeometry
+import com.noted.app.ui.rich.ItemShortcut
+import com.noted.app.ui.rich.TextGeometry
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.PI
@@ -89,10 +89,10 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jot.app.ui.rich.ItemCallbacks
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.RichTextField
-import com.jot.app.ui.rich.rememberRichStyle
+import com.noted.app.ui.rich.ItemCallbacks
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.RichTextField
+import com.noted.app.ui.rich.rememberRichStyle
 
 /** Alto de cada fila. */
 internal val CHECKLIST_ROW = 48.dp

@@ -1,15 +1,15 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.text.SpannableString
-import com.jot.app.data.Attachment
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.html.TestBodies
-import com.jot.app.ui.rich.BLOCK_MARK_FLAGS
-import com.jot.app.ui.rich.BlockMark
-import com.jot.app.ui.rich.INLINE_MARK_FLAGS
-import com.jot.app.ui.rich.RichMark
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.lineStartOf
+import com.noted.app.data.Attachment
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.html.TestBodies
+import com.noted.app.ui.rich.BLOCK_MARK_FLAGS
+import com.noted.app.ui.rich.BlockMark
+import com.noted.app.ui.rich.INLINE_MARK_FLAGS
+import com.noted.app.ui.rich.RichMark
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.lineStartOf
 import org.json.JSONArray
 import org.jsoup.Jsoup
 import org.junit.Assert.assertEquals
@@ -189,7 +189,7 @@ class HtmlBlocksChecklistTest {
             val note = notes.getJSONObject(i)
             val title = note.getString("title")
             val html = note.getString("html")
-            val attachments = Regex("jot://att/([0-9a-f-]+)").findAll(html).map {
+            val attachments = Regex("noted://att/([0-9a-f-]+)").findAll(html).map {
                 Attachment(it.groupValues[1], "n", "foto.jpg", "image/jpeg", 1, "x.jpg", 0)
             }.toList()
             val blocks = parse(html, attachments)

@@ -1,9 +1,9 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.Context
 import android.net.Uri
 import androidx.documentfile.provider.DocumentFile
-import com.jot.app.data.html.NoteMarkdown
+import com.noted.app.data.html.NoteMarkdown
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -173,7 +173,7 @@ object NoteIO {
                 val linkedNoteId = replacement?.let { noteIdByPath[it.path.lowercase(Locale.ROOT)] }
                 when {
                     linkedNoteId != null ->
-                        LinkReplacement("[$label](jot://note/$linkedNoteId)")
+                        LinkReplacement("[$label](noted://note/$linkedNoteId)")
 
                     replacement != null && !replacement.doc.isDirectory -> {
                         val attachment = repo.addAttachment(
@@ -194,7 +194,7 @@ object NoteIO {
                     // Ruta relativa que no se encontró: queda solo el texto del enlace.
                     !target.startsWith("http", true) &&
                         !target.startsWith("mailto", true) &&
-                        !target.startsWith("jot://", true) ->
+                        !target.startsWith("noted://", true) ->
                         LinkReplacement(label)
 
                     else -> null
@@ -356,17 +356,17 @@ object NoteIO {
         return fixed to text
     }
 
-    /** La marca `<!-- jot:bookmark [oldId] -->` de [body] pasa a llevar [newId]. */
+    /** La marca `<!-- noted:bookmark [oldId] -->` de [body] pasa a llevar [newId]. */
     internal fun renameBookmarkMark(body: String, oldId: String, newId: String): String =
-        Regex("<!--\\s*jot:bookmark\\s+" + Regex.escape(oldId) + "\\s*-->")
-            .replace(body, Regex.escapeReplacement("<!-- jot:bookmark $newId -->"))
+        Regex("<!--\\s*noted:bookmark\\s+" + Regex.escape(oldId) + "\\s*-->")
+            .replace(body, Regex.escapeReplacement("<!-- noted:bookmark $newId -->"))
 
     /**
      * Agrega al final de [body] la marca y el enlace de cada tarjeta de [cards] que el cuerpo
      * no nombra. Sin eso la tarjeta quedaría en la nota sin bloque, y se descartaría.
      */
     internal fun withMissingMarks(cards: List<ImportedBookmark>, body: String): String {
-        val named = Regex("<!--\\s*jot:bookmark\\s+(\\S+)\\s*-->").findAll(body)
+        val named = Regex("<!--\\s*noted:bookmark\\s+(\\S+)\\s*-->").findAll(body)
             .map { it.groupValues[1] }.toSet()
         val missing = cards.filter { it.id !in named }
         if (missing.isEmpty()) return body
@@ -375,7 +375,7 @@ object NoteIO {
             missing.forEach { card ->
                 if (isNotEmpty()) append("\n\n")
                 val title = card.title.replace("]", "］").replace("\n", " ").ifBlank { card.url }
-                append("<!-- jot:bookmark ").append(card.id).append(" -->\n")
+                append("<!-- noted:bookmark ").append(card.id).append(" -->\n")
                 append('[').append(title).append("](").append(card.url.replace(")", "）")).append(')')
             }
             append('\n')
@@ -514,7 +514,7 @@ object NoteIO {
         if (target.startsWith("http", true) ||
             target.startsWith("mailto:", true) ||
             target.startsWith("data:", true) ||
-            target.startsWith("jot://", true) ||
+            target.startsWith("noted://", true) ||
             target.startsWith("#")
         ) return null
 
@@ -775,10 +775,10 @@ object NoteIO {
     ): String {
         var body = NoteMarkdown.fromHtml(note.body, note.attachments, note.bookmarks)
         attachmentPaths.forEach { (id, path) ->
-            body = body.replace("jot://att/$id", linkTarget(path))
+            body = body.replace("noted://att/$id", linkTarget(path))
         }
         noteFiles.forEach { (id, fileName) ->
-            body = body.replace("jot://note/$id", linkTarget(fileName))
+            body = body.replace("noted://note/$id", linkTarget(fileName))
         }
         return buildString {
             append("---\n")

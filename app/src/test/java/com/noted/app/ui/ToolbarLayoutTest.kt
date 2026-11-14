@@ -1,4 +1,4 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

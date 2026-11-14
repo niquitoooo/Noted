@@ -1,11 +1,11 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
-import com.jot.app.data.db.HistoryCodec
-import com.jot.app.data.db.NotesDatabase
-import com.jot.app.data.html.NoteMarkdown
+import com.noted.app.data.db.HistoryCodec
+import com.noted.app.data.db.NotesDatabase
+import com.noted.app.data.html.NoteMarkdown
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
 import org.json.JSONObject
@@ -32,7 +32,7 @@ class NotesRepositoryRoomTest {
     fun setUp() {
         context = ApplicationProvider.getApplicationContext()
         context.filesDir.listFiles()?.forEach { it.deleteRecursively() }
-        prefs = context.getSharedPreferences("jot", Context.MODE_PRIVATE)
+        prefs = context.getSharedPreferences("noted", Context.MODE_PRIVATE)
         prefs.edit().clear().commit()
         db = NotesDatabase.inMemory(context)
     }
@@ -212,7 +212,7 @@ class NotesRepositoryRoomTest {
         val repo = repository()
         val parent = repo.createNote()
         val child = repo.createNote(fresh = true)
-        repo.update(parent.id) { it.copy(body = html("[Hija](jot://note/${child.id})")) }
+        repo.update(parent.id) { it.copy(body = html("[Hija](noted://note/${child.id})")) }
 
         runBlocking { repo.flushAndWait() }
 
@@ -239,7 +239,7 @@ class NotesRepositoryRoomTest {
         val parent = repo.createNote()
         val child = repo.createNote(fresh = true)
         repo.update(parent.id) {
-            it.copy(body = html("antes\n[Hija](jot://note/${child.id})\ndespués"))
+            it.copy(body = html("antes\n[Hija](noted://note/${child.id})\ndespués"))
         }
         assertEquals(listOf(child.id), repo.findNote(parent.id)!!.noteLinkIds)
 

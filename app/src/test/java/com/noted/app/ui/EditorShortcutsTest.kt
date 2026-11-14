@@ -1,14 +1,14 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.view.KeyEvent
-import com.jot.app.ui.EditorShortcut.Bar
-import com.jot.app.ui.EditorShortcut.Heading
-import com.jot.app.ui.EditorShortcut.Highlight
-import com.jot.app.ui.EditorShortcut.Indent
-import com.jot.app.ui.EditorShortcut.Inline
-import com.jot.app.ui.EditorShortcut.MoveListItem
-import com.jot.app.ui.EditorShortcut.TextColor
-import com.jot.app.ui.rich.InlineFormat
+import com.noted.app.ui.EditorShortcut.Bar
+import com.noted.app.ui.EditorShortcut.Heading
+import com.noted.app.ui.EditorShortcut.Highlight
+import com.noted.app.ui.EditorShortcut.Indent
+import com.noted.app.ui.EditorShortcut.Inline
+import com.noted.app.ui.EditorShortcut.MoveListItem
+import com.noted.app.ui.EditorShortcut.TextColor
+import com.noted.app.ui.rich.InlineFormat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test

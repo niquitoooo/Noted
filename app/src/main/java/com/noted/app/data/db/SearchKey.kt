@@ -1,4 +1,4 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 /**
  * La columna `searchKey` de `note`: título, texto y enlaces llevados a una forma sin mayúsculas,

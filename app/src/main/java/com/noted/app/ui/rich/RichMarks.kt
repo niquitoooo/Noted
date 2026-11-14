@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.Spanned
 import java.util.concurrent.atomic.AtomicLong
@@ -57,16 +57,16 @@ class CodeMark : InlineMark
  */
 class LinkMark(val href: String?, val attrs: Map<String, String>) : InlineMark
 
-/** Color de texto, `<span class="jot-text-<color>">`. */
+/** Color de texto, `<span class="noted-text-<color>">`. */
 class TextColorMark(val color: String) : InlineMark
 
-/** Resaltado, `<span class="jot-highlight-<color>">`; `null` es el verde (`jot-highlight`). */
+/** Resaltado, `<span class="noted-highlight-<color>">`; `null` es el verde (`noted-highlight`). */
 class HighlightMark(val color: String?) : InlineMark
 
 /** El nombre del resaltado verde en los atajos y en [PendingColor]; se guarda sin sufijo. */
 const val GREEN = "green"
 
-/** El resaltado de [color]: el verde es [HighlightMark] con `color = null` (`jot-highlight`). */
+/** El resaltado de [color]: el verde es [HighlightMark] con `color = null` (`noted-highlight`). */
 fun highlightMark(color: String): HighlightMark = HighlightMark(color.takeIf { it != GREEN })
 
 /** Título `<h1>`…`<h6>`. */

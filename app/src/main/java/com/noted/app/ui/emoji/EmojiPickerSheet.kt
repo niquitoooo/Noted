@@ -1,4 +1,4 @@
-package com.jot.app.ui.emoji
+package com.noted.app.ui.emoji
 
 import android.app.Activity
 import android.content.Context

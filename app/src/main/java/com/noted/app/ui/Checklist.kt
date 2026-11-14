@@ -1,22 +1,22 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import android.text.SpannableString
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.rich.BLOCK_MARK_FLAGS
-import com.jot.app.ui.rich.BlockMark
-import com.jot.app.ui.rich.HeadingMark
-import com.jot.app.ui.rich.INLINE_MARK_FLAGS
-import com.jot.app.ui.rich.InlineFormat
-import com.jot.app.ui.rich.InlineMark
-import com.jot.app.ui.rich.ListKind
-import com.jot.app.ui.rich.ListMark
-import com.jot.app.ui.rich.PendingColor
-import com.jot.app.ui.rich.RichHtml
-import com.jot.app.ui.rich.RichMark
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.concat
-import com.jot.app.ui.rich.copy
-import com.jot.app.ui.rich.split
+import com.noted.app.ui.rich.BLOCK_MARK_FLAGS
+import com.noted.app.ui.rich.BlockMark
+import com.noted.app.ui.rich.HeadingMark
+import com.noted.app.ui.rich.INLINE_MARK_FLAGS
+import com.noted.app.ui.rich.InlineFormat
+import com.noted.app.ui.rich.InlineMark
+import com.noted.app.ui.rich.ListKind
+import com.noted.app.ui.rich.ListMark
+import com.noted.app.ui.rich.PendingColor
+import com.noted.app.ui.rich.RichHtml
+import com.noted.app.ui.rich.RichMark
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.concat
+import com.noted.app.ui.rich.copy
+import com.noted.app.ui.rich.split
 import java.util.UUID
 
 /**

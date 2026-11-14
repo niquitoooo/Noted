@@ -1,7 +1,7 @@
-package com.jot.app.data
+package com.noted.app.data
 
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.html.withDerived
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.html.withDerived
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -33,15 +33,15 @@ class NoteIOMarkdownTest {
         "```",
         "---",
         "",
-        "[foto.jpg](jot://att/p1)",
-        "[a］b (c）.pdf](jot://att/f1)",
-        "[Otra nota](jot://note/n2)",
-        "<!-- jot:bookmark b1 -->",
+        "[foto.jpg](noted://att/p1)",
+        "[a］b (c）.pdf](noted://att/f1)",
+        "[Otra nota](noted://note/n2)",
+        "<!-- noted:bookmark b1 -->",
         "[Mate](https://x.com/mate)",
         "<details open>",
         "<summary>Plegable</summary>",
         "adentro",
-        "[foto.jpg](jot://att/p1)",
+        "[foto.jpg](noted://att/p1)",
         "</details>",
         "fin",
     ).joinToString("\n")
@@ -75,7 +75,7 @@ class NoteIOMarkdownTest {
         [foto.jpg](attachments/p1_foto.jpg)
         [a］b (c）.pdf](attachments/f1_a%5Db%20%28c%29.pdf)
         [Otra nota](Otra%20nota.md)
-        <!-- jot:bookmark b1 -->
+        <!-- noted:bookmark b1 -->
         [Mate](https://x.com/mate)
         <details open>
         <summary>Plegable</summary>
@@ -104,7 +104,7 @@ class NoteIOMarkdownTest {
     private fun resolve(label: String, target: String): NoteIO.LinkReplacement? = when (target) {
         "attachments/p1_foto.jpg" -> NoteIO.LinkReplacement(NoteMarkdown.attachmentToken(photo), photo)
         "attachments/f1_a%5Db%20%28c%29.pdf" -> NoteIO.LinkReplacement(NoteMarkdown.attachmentToken(file), file)
-        "Otra%20nota.md" -> NoteIO.LinkReplacement("[$label](jot://note/n2)")
+        "Otra%20nota.md" -> NoteIO.LinkReplacement("[$label](noted://note/n2)")
         else -> null
     }
 

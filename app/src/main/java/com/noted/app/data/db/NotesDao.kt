@@ -1,4 +1,4 @@
-package com.jot.app.data.db
+package com.noted.app.data.db
 
 import androidx.room.Dao
 import androidx.room.Insert

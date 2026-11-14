@@ -1,7 +1,7 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -27,10 +27,10 @@ class ConversionCheckTest {
         "```",
         "codigo()",
         "```",
-        "[foto.jpg](jot://att/p1)",
-        "[informe.pdf](jot://att/f1)",
-        "[Otra](jot://note/n2)",
-        "<!-- jot:bookmark b1 -->",
+        "[foto.jpg](noted://att/p1)",
+        "[informe.pdf](noted://att/f1)",
+        "[Otra](noted://note/n2)",
+        "<!-- noted:bookmark b1 -->",
         "[Sitio](https://example.com)",
         "<details open>",
         "<summary>Desplegable</summary>",
@@ -81,7 +81,7 @@ class ConversionCheckTest {
     @Test
     fun missingToggleBookmarkAndNoteAreReported() {
         val html = toHtml(mixed)
-            .replace(Regex("<div data-jot-bookmark.*?</div>"), "")
+            .replace(Regex("<div data-noted-bookmark.*?</div>"), "")
             .replace(Regex("<div><a data-note-id.*?</div>"), "")
         val reasons = verify(mixed, html)
         assertTrue(reasons.toString(), "falta la tarjeta b1" in reasons)
@@ -92,7 +92,7 @@ class ConversionCheckTest {
 
     @Test
     fun unknownAttachmentIsNotAPiece() {
-        val markdown = "hola\n[raro.bin](jot://att/zz)\n[Otra](jot://note/n2)"
+        val markdown = "hola\n[raro.bin](noted://att/zz)\n[Otra](noted://note/n2)"
         assertEquals(emptyList<String>(), verify(markdown, toHtml(markdown)))
     }
 

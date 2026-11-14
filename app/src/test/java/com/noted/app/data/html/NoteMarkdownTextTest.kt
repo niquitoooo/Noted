@@ -1,4 +1,4 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -220,15 +220,15 @@ class NoteMarkdownTextTest {
         // La "\" solo es escape en un renglón que parece token (adjunto, nota, tarjeta, desplegable).
         assertPair("\\- no es lista", "<div>\\- no es lista</div>")
         assertPair(
-            "\\[x](jot://note/1)",
-            "<div><a href=\"jot://note/1\">x</a></div>",
+            "\\[x](noted://note/1)",
+            "<div><a href=\"noted://note/1\">x</a></div>",
         )
         assertPair("\\<details>", "<div>&lt;details&gt;</div>")
-        assertPair("  \\[f](jot://att/2)", "<div>  <a href=\"jot://att/2\">f</a></div>")
+        assertPair("  \\[f](noted://att/2)", "<div>  <a href=\"noted://att/2\">f</a></div>")
         // Con dos "\" se saca una y la otra queda a la vista.
         assertPair(
-            "\\\\[x](jot://note/1)",
-            "<div>\\<a href=\"jot://note/1\">x</a></div>",
+            "\\\\[x](noted://note/1)",
+            "<div>\\<a href=\"noted://note/1\">x</a></div>",
         )
         // Dentro de un bloque de código también.
         assertPair(
@@ -273,22 +273,22 @@ class NoteMarkdownTextTest {
     fun textColorRoundTrips() {
         for (color in colors) {
             assertPair(
-                "a <span class=\"jot-text-$color\">b</span> c",
-                "<div>a <span class=\"jot-text-$color\">b</span> c</div>",
+                "a <span class=\"noted-text-$color\">b</span> c",
+                "<div>a <span class=\"noted-text-$color\">b</span> c</div>",
             )
         }
         assertPair(
-            "<span class=\"jot-text-red\">**b**</span>",
-            "<div><span class=\"jot-text-red\"><b>b</b></span></div>",
+            "<span class=\"noted-text-red\">**b**</span>",
+            "<div><span class=\"noted-text-red\"><b>b</b></span></div>",
         )
     }
 
     @Test
     fun greenHighlightExportsAsEquals() {
-        assertPair("a ==b== c", "<div>a <span class=\"jot-highlight\">b</span> c</div>")
-        assertPair("==**b**==", "<div><span class=\"jot-highlight\"><b>b</b></span></div>")
+        assertPair("a ==b== c", "<div>a <span class=\"noted-highlight\">b</span> c</div>")
+        assertPair("==**b**==", "<div><span class=\"noted-highlight\"><b>b</b></span></div>")
         // Los espacios de los bordes salen de la marca, que si no, no vuelve a leerse.
-        assertEquals("a ==b== c", fromHtml("<div>a<span class=\"jot-highlight\"> b </span>c</div>"))
+        assertEquals("a ==b== c", fromHtml("<div>a<span class=\"noted-highlight\"> b </span>c</div>"))
     }
 
     @Test
@@ -302,7 +302,7 @@ class NoteMarkdownTextTest {
     fun greenHighlightOverLinkWithEqualsRoundTrips() {
         assertPair(
             "==[l](https://x/?t=YQ==)==",
-            "<div><span class=\"jot-highlight\"><a href=\"https://x/?t=YQ==\">l</a></span></div>",
+            "<div><span class=\"noted-highlight\"><a href=\"https://x/?t=YQ==\">l</a></span></div>",
         )
     }
 
@@ -310,7 +310,7 @@ class NoteMarkdownTextTest {
     fun greenHighlightOverCodeWithEqualsRoundTrips() {
         assertPair(
             "==`a==b`==",
-            "<div><span class=\"jot-highlight\"><code spellcheck=\"false\">a==b</code></span></div>",
+            "<div><span class=\"noted-highlight\"><code spellcheck=\"false\">a==b</code></span></div>",
         )
     }
 
@@ -321,8 +321,8 @@ class NoteMarkdownTextTest {
             "<div><u><code spellcheck=\"false\">&lt;/u&gt;</code> y</u></div>",
         )
         assertPair(
-            "<span class=\"jot-text-red\">`</span>`</span>",
-            "<div><span class=\"jot-text-red\"><code spellcheck=\"false\">&lt;/span&gt;</code></span></div>",
+            "<span class=\"noted-text-red\">`</span>`</span>",
+            "<div><span class=\"noted-text-red\"><code spellcheck=\"false\">&lt;/span&gt;</code></span></div>",
         )
     }
 
@@ -330,42 +330,42 @@ class NoteMarkdownTextTest {
     fun equalsBeforeGreenHighlightRoundTrips() {
         // Con un "=" pegado, el verde sale como los otros colores, no como "==".
         assertPair(
-            "a=<span class=\"jot-highlight\">x</span>",
-            "<div>a=<span class=\"jot-highlight\">x</span></div>",
+            "a=<span class=\"noted-highlight\">x</span>",
+            "<div>a=<span class=\"noted-highlight\">x</span></div>",
         )
-        assertPair("a=b ==x==", "<div>a=b <span class=\"jot-highlight\">x</span></div>")
-        assertPair("a= ==x==", "<div>a= <span class=\"jot-highlight\">x</span></div>")
+        assertPair("a=b ==x==", "<div>a=b <span class=\"noted-highlight\">x</span></div>")
+        assertPair("a= ==x==", "<div>a= <span class=\"noted-highlight\">x</span></div>")
     }
 
     @Test
     fun equalsAfterGreenHighlightRoundTrips() {
         assertPair(
-            "<span class=\"jot-highlight\">x</span>=y",
-            "<div><span class=\"jot-highlight\">x</span>=y</div>",
+            "<span class=\"noted-highlight\">x</span>=y",
+            "<div><span class=\"noted-highlight\">x</span>=y</div>",
         )
         assertPair(
-            "<span class=\"jot-highlight\">x</span>\\==",
-            "<div><span class=\"jot-highlight\">x</span>==</div>",
+            "<span class=\"noted-highlight\">x</span>\\==",
+            "<div><span class=\"noted-highlight\">x</span>==</div>",
         )
     }
 
     @Test
     fun greenHighlightStartingWithEqualsRoundTrips() {
         for (inner in listOf("=x", "x=", "=x=", "==")) {
-            val html = "<div>a <span class=\"jot-highlight\">$inner</span> b</div>"
+            val html = "<div>a <span class=\"noted-highlight\">$inner</span> b</div>"
             assertEquals(html, toHtml(fromHtml(html)))
         }
         assertPair(
-            "<span class=\"jot-highlight\">=x</span>",
-            "<div><span class=\"jot-highlight\">=x</span></div>",
+            "<span class=\"noted-highlight\">=x</span>",
+            "<div><span class=\"noted-highlight\">=x</span></div>",
         )
     }
 
     @Test
     fun emptyGreenHighlightRoundTrips() {
         assertPair(
-            "<span class=\"jot-highlight\"></span>",
-            "<div><span class=\"jot-highlight\"></span></div>",
+            "<span class=\"noted-highlight\"></span>",
+            "<div><span class=\"noted-highlight\"></span></div>",
         )
     }
 
@@ -373,14 +373,14 @@ class NoteMarkdownTextTest {
     fun otherHighlightRoundTrips() {
         for (color in colors.filter { it != "green" }) {
             assertPair(
-                "a <span class=\"jot-highlight-$color\">b</span> c",
-                "<div>a <span class=\"jot-highlight-$color\">b</span> c</div>",
+                "a <span class=\"noted-highlight-$color\">b</span> c",
+                "<div>a <span class=\"noted-highlight-$color\">b</span> c</div>",
             )
         }
         // Color y resaltado en un mismo span salen anidados.
         assertEquals(
-            "<span class=\"jot-text-red\">==x==</span>",
-            fromHtml("<div><span class=\"jot-text-red jot-highlight\">x</span></div>"),
+            "<span class=\"noted-text-red\">==x==</span>",
+            fromHtml("<div><span class=\"noted-text-red noted-highlight\">x</span></div>"),
         )
     }
 
@@ -388,7 +388,7 @@ class NoteMarkdownTextTest {
     fun literalAngleAndEqualsRoundTrip() {
         val texts = listOf(
             "<u>x</u>", "</span>", "<sub>a</sub>", "a == b", "===", "====", "a==b==c",
-            "\\<u>x</u>", "\\\\==x==", "<span class=\"jot-text-red\">x</span>", "a < b", "x\\",
+            "\\<u>x</u>", "\\\\==x==", "<span class=\"noted-text-red\">x</span>", "a < b", "x\\",
         )
         for (text in texts) {
             val html = "<div>" + text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</div>"
@@ -446,14 +446,14 @@ class NoteMarkdownTextTest {
         )
         val wholeLines = listOf(
             "", "", "   ", "```", "```kotlin", "```py", " ``` x", "``` ", "---", "***", "****", "******", "___", "- - -",
-            "[a](jot://note/1)", "\\[a](jot://note/1)", "[f](jot://att/2)", "<details>",
-            "<details open>", "<summary>t</summary>", "</details>", "<!-- jot:bookmark b1 -->",
+            "[a](noted://note/1)", "\\[a](noted://note/1)", "[f](noted://att/2)", "<details>",
+            "<details open>", "<summary>t</summary>", "</details>", "<!-- noted:bookmark b1 -->",
         )
         val pieces = listOf(
             "a", "b", "hola", " ", " ", "*", "**", "***", "~~", "~", "`", "[", "]", "(", ")", "](",
             "[x](u)", "[x](a(b)c)", "2", "<", ">", "&", "\"", "'", "\\", "#", "\t", "&amp;",
-            "<u>", "</u>", "<sub>", "</sub>", "<sup>", "</sup>", "<span class=\"jot-text-red\">",
-            "<span class=\"jot-highlight-blue\">", "</span>", "==", "=", "\\<", "\\==",
+            "<u>", "</u>", "<sub>", "</sub>", "<sup>", "</sup>", "<span class=\"noted-text-red\">",
+            "<span class=\"noted-highlight-blue\">", "</span>", "==", "=", "\\<", "\\==",
         )
         val random = Random(20261101L)
         repeat(3000) {

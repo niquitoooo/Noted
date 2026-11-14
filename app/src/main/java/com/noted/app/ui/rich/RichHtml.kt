@@ -1,11 +1,11 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import com.jot.app.data.html.HtmlSanitizer
-import com.jot.app.data.html.ListBuilder
-import com.jot.app.data.html.appendCode
-import com.jot.app.data.html.appendLinesWithBr
+import com.noted.app.data.html.HtmlSanitizer
+import com.noted.app.data.html.ListBuilder
+import com.noted.app.data.html.appendCode
+import com.noted.app.data.html.appendLinesWithBr
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -22,8 +22,8 @@ import org.jsoup.nodes.TextNode
  */
 object RichHtml {
 
-    private const val TEXT_COLOR = "jot-text-"
-    private const val HIGHLIGHT = "jot-highlight"
+    private const val TEXT_COLOR = "noted-text-"
+    private const val HIGHLIGHT = "noted-highlight"
     private const val NBSP = '\u00A0'
 
     /** Las etiquetas que dan renglones; las demás son contenido en línea. */

@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.app.Activity
 import android.content.ClipData
@@ -29,8 +29,8 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.TextView
 import androidx.compose.ui.text.TextRange
-import com.jot.app.ui.EditorShortcut
-import com.jot.app.ui.rich.RichDebug.describe
+import com.noted.app.ui.EditorShortcut
+import com.noted.app.ui.rich.RichDebug.describe
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -356,7 +356,7 @@ class RichEditTextTest {
 
         assertEquals("p|{a=https://example.com}https://example.com{/a}", describe(last().text))
         val link = last().text.getSpans(0, last().text.length, LinkMark::class.java).single()
-        assertEquals("jot-break-all", link.attrs["class"])
+        assertEquals("noted-break-all", link.attrs["class"])
         assertEquals(TextRange(19), last().selection)
         assertTrue(last().autoFormatted)
 

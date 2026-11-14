@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.graphics.Typeface
 import android.text.Spannable
@@ -117,7 +117,7 @@ class RichRenderTest {
     fun inlineMarks() {
         val text = rendered(
             "<div><b>b</b><i>i</i><strike>s</strike><u>u</u><a href=\"x\">l</a><sub>d</sub>" +
-                "<span class=\"jot-text-red\">r</span><span class=\"jot-highlight\">h</span></div>"
+                "<span class=\"noted-text-red\">r</span><span class=\"noted-highlight\">h</span></div>"
         )
         assertEquals(listOf(Typeface.BOLD), text.spansAt<StyleSpan>(0).map { it.style })
         assertEquals(listOf(Typeface.ITALIC), text.spansAt<StyleSpan>(1).map { it.style })
@@ -130,7 +130,7 @@ class RichRenderTest {
         assertEquals(listOf(0xFFF9241C.toInt()), text.spansAt<ForegroundColorSpan>(6).map { it.foregroundColor })
         assertEquals(listOf(0xFFE7FFCD.toInt()), text.spansAt<BackgroundColorSpan>(7).map { it.backgroundColor })
 
-        val dark = rendered("<div><span class=\"jot-text-red\">r</span><span class=\"jot-highlight-gray\">h</span></div>", style.copy(dark = true))
+        val dark = rendered("<div><span class=\"noted-text-red\">r</span><span class=\"noted-highlight-gray\">h</span></div>", style.copy(dark = true))
         assertEquals(listOf(0xFFFF5959.toInt()), dark.spansAt<ForegroundColorSpan>(0).map { it.foregroundColor })
         assertEquals(listOf(0xFF363A41.toInt()), dark.spansAt<BackgroundColorSpan>(1).map { it.backgroundColor })
     }
@@ -152,7 +152,7 @@ class RichRenderTest {
     private val sample =
         "<h1>Título <b>uno</b></h1>" +
             "<ol><li>a</li><li>b<ol><li>c</li><li>d</li></ol></li><li>e</li></ol>" +
-            "<div>p <span class=\"jot-text-red\">rojo</span> <span class=\"jot-highlight\">h</span></div>" +
+            "<div>p <span class=\"noted-text-red\">rojo</span> <span class=\"noted-highlight\">h</span></div>" +
             "<ol start=\"3\"><li>f</li><li><i>g</i></li><li><h2>t</h2></li></ol>" +
             "<ul><li>x</li><li data-checked=\"true\">y</li></ul>" +
             "<blockquote>q<br>r</blockquote>" +

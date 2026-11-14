@@ -1,11 +1,11 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.SharedPreferences
-import com.jot.app.data.db.NotesDao
-import com.jot.app.data.db.toEntity
-import com.jot.app.data.html.ConversionCheck
-import com.jot.app.data.html.NoteMarkdown
-import com.jot.app.data.html.withDerived
+import com.noted.app.data.db.NotesDao
+import com.noted.app.data.db.toEntity
+import com.noted.app.data.html.ConversionCheck
+import com.noted.app.data.html.NoteMarkdown
+import com.noted.app.data.html.withDerived
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

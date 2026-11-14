@@ -1,10 +1,10 @@
-package com.jot.app.data.html
+package com.noted.app.data.html
 
-import com.jot.app.data.Attachment
-import com.jot.app.data.Bookmark
-import com.jot.app.data.Note
-import com.jot.app.data.searchableText
-import com.jot.app.util.stripMarkdown
+import com.noted.app.data.Attachment
+import com.noted.app.data.Bookmark
+import com.noted.app.data.Note
+import com.noted.app.data.searchableText
+import com.noted.app.util.stripMarkdown
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -41,15 +41,15 @@ class NoteHtmlTest {
             "  - viñeta adentro",
             "- [ ] tarea pendiente",
             "---",
-            "[foto.jpg](jot://att/p1)",
-            "[informe.pdf](jot://att/f1)",
-            "[Otra nota](jot://note/n2)",
-            "<!-- jot:bookmark b1 -->",
+            "[foto.jpg](noted://att/p1)",
+            "[informe.pdf](noted://att/f1)",
+            "[Otra nota](noted://note/n2)",
+            "<!-- noted:bookmark b1 -->",
             "[Sitio de ejemplo](https://example.com)",
             "<details open>",
             "<summary>Desplegable &amp; más</summary>",
             "adentro del desplegable",
-            "[foto.jpg](jot://att/p1)",
+            "[foto.jpg](noted://att/p1)",
             "</details>",
             "final",
         ).joinToString("\n")
@@ -72,7 +72,7 @@ class NoteHtmlTest {
         // Una imagen o una nota de adentro no dan renglón de resumen.
         assertEquals(
             "Texto",
-            NoteHtml.summary(toHtml("[foto.jpg](jot://att/p1)\n[Otra](jot://note/n2)\nTexto")),
+            NoteHtml.summary(toHtml("[foto.jpg](noted://att/p1)\n[Otra](noted://note/n2)\nTexto")),
         )
         assertEquals("a".repeat(200), NoteHtml.summary(toHtml("a".repeat(300))))
         assertEquals("", NoteHtml.summary(""))
@@ -88,9 +88,9 @@ class NoteHtmlTest {
     @Test
     fun noteLinkBlockIdsIgnoresInlineLinks() {
         val html = toHtml(
-            "[Uno](jot://note/n2)\n" +
-                "texto [Dos](jot://note/n3) en el medio\n" +
-                "<details>\n<summary>Grupo</summary>\n[Tres](jot://note/n4)\n</details>",
+            "[Uno](noted://note/n2)\n" +
+                "texto [Dos](noted://note/n3) en el medio\n" +
+                "<details>\n<summary>Grupo</summary>\n[Tres](noted://note/n4)\n</details>",
         )
 
         assertEquals(listOf("n2", "n4"), NoteHtml.noteLinkBlockIds(html))
@@ -106,24 +106,24 @@ class NoteHtmlTest {
 
     @Test
     fun removeNoteLinkBlocks() {
-        val html = toHtml("a\n[Uno](jot://note/n2)\ntexto [Uno](jot://note/n2)\n[Dos](jot://note/n3)\nb")
+        val html = toHtml("a\n[Uno](noted://note/n2)\ntexto [Uno](noted://note/n2)\n[Dos](noted://note/n3)\nb")
 
         assertEquals(
-            toHtml("a\ntexto [Uno](jot://note/n2)\n[Dos](jot://note/n3)\nb"),
+            toHtml("a\ntexto [Uno](noted://note/n2)\n[Dos](noted://note/n3)\nb"),
             NoteHtml.removeNoteLinkBlocks(html, "n2"),
         )
     }
 
     @Test
     fun removeAttachment() {
-        val html = toHtml("a\n[foto.jpg](jot://att/p1)\n[informe.pdf](jot://att/f1)\nb")
+        val html = toHtml("a\n[foto.jpg](noted://att/p1)\n[informe.pdf](noted://att/f1)\nb")
 
         assertEquals(
-            toHtml("a\n[informe.pdf](jot://att/f1)\nb"),
+            toHtml("a\n[informe.pdf](noted://att/f1)\nb"),
             NoteHtml.removeAttachment(html, "p1"),
         )
         assertEquals(
-            toHtml("a\n[foto.jpg](jot://att/p1)\nb"),
+            toHtml("a\n[foto.jpg](noted://att/p1)\nb"),
             NoteHtml.removeAttachment(html, "f1"),
         )
     }
@@ -135,13 +135,13 @@ class NoteHtmlTest {
         assertEquals(
             empty,
             NoteHtml.removeAttachment(
-                toHtml("<details open>\n<summary>t</summary>\n[foto.jpg](jot://att/p1)\n</details>"), "p1"
+                toHtml("<details open>\n<summary>t</summary>\n[foto.jpg](noted://att/p1)\n</details>"), "p1"
             ),
         )
         assertEquals(
             empty,
             NoteHtml.removeNoteLinkBlocks(
-                toHtml("<details open>\n<summary>t</summary>\n[Uno](jot://note/n2)\n</details>"), "n2"
+                toHtml("<details open>\n<summary>t</summary>\n[Uno](noted://note/n2)\n</details>"), "n2"
             ),
         )
     }
@@ -152,10 +152,10 @@ class NoteHtmlTest {
         assertTrue(NoteHtml.isBlank(toHtml("\n\n")))
         assertTrue(NoteHtml.isBlank("<div>  </div><div><br></div>"))
         assertFalse(NoteHtml.isBlank(toHtml("hola")))
-        assertFalse(NoteHtml.isBlank(toHtml("[foto.jpg](jot://att/p1)")))
-        assertFalse(NoteHtml.isBlank(toHtml("[informe.pdf](jot://att/f1)")))
-        assertFalse(NoteHtml.isBlank(toHtml("[Otra](jot://note/n2)")))
-        assertFalse(NoteHtml.isBlank(toHtml("<!-- jot:bookmark b1 -->\n[](https://a.com)")))
+        assertFalse(NoteHtml.isBlank(toHtml("[foto.jpg](noted://att/p1)")))
+        assertFalse(NoteHtml.isBlank(toHtml("[informe.pdf](noted://att/f1)")))
+        assertFalse(NoteHtml.isBlank(toHtml("[Otra](noted://note/n2)")))
+        assertFalse(NoteHtml.isBlank(toHtml("<!-- noted:bookmark b1 -->\n[](https://a.com)")))
         assertFalse(NoteHtml.isBlank(toHtml("<details>\n<summary></summary>\n</details>")))
         assertFalse(NoteHtml.isBlank(toHtml("---")))
     }
@@ -177,7 +177,7 @@ class NoteHtmlTest {
     @Test
     fun withDerivedFillsTheFields() {
         val note = Note(
-            body = toHtml("[foto.jpg](jot://att/p1)\nHola #etiqueta\n- [ ] algo\n[Otra](jot://note/n2)"),
+            body = toHtml("[foto.jpg](noted://att/p1)\nHola #etiqueta\n- [ ] algo\n[Otra](noted://note/n2)"),
             attachments = attachments,
         ).withDerived()
 
@@ -193,11 +193,11 @@ class NoteHtmlTest {
         val bookmark = Bookmark(id = "b1", url = "https://github.com/example", title = "Repo")
         val markdown = listOf(
             "Mirá [esto](https://docs.example.org/guia) un rato",
-            "<!-- jot:bookmark b1 -->",
+            "<!-- noted:bookmark b1 -->",
             "[Repo](https://github.com/example)",
-            "[foto.jpg](jot://att/p1)",
-            "[informe.pdf](jot://att/f1)",
-            "[Otra](jot://note/n2)",
+            "[foto.jpg](noted://att/p1)",
+            "[informe.pdf](noted://att/f1)",
+            "[Otra](noted://note/n2)",
         ).joinToString("\n")
         val html = NoteMarkdown.toHtml(markdown, attachments, listOf(bookmark))
         val note = Note(body = html, attachments = attachments, bookmarks = listOf(bookmark)).withDerived()
@@ -207,7 +207,7 @@ class NoteHtmlTest {
         assertEquals("https://docs.example.org/guia\nhttps://github.com/example", note.linkText)
         assertTrue(note.matchesSearch("github.com"))
         assertTrue(note.matchesSearch("DOCS.EXAMPLE"))
-        assertFalse(note.matchesSearch("jot://"))
+        assertFalse(note.matchesSearch("noted://"))
         assertFalse(note.matchesSearch("openNote"))
         // El resumen y el texto siguen sin las direcciones.
         assertEquals("Mirá esto un rato", note.summary)
@@ -218,9 +218,9 @@ class NoteHtmlTest {
     fun withDerivedMatchesTheSingleFunctions() {
         val markdown = listOf(
             "#a `#b` [#c](https://c.com)",
-            "[foto.jpg](jot://att/p1)",
+            "[foto.jpg](noted://att/p1)",
             "- [ ] x",
-            "[Otra](jot://note/n2)",
+            "[Otra](noted://note/n2)",
             "<details>",
             "<summary>#tit</summary>",
             "#x",

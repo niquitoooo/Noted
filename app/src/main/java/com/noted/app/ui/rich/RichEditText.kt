@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.annotation.SuppressLint
 import android.content.ClipData
@@ -36,8 +36,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.ui.text.TextRange
 import androidx.core.view.inputmethod.EditorInfoCompat
 import androidx.core.view.inputmethod.InputConnectionCompat
-import com.jot.app.ui.EditorShortcut
-import com.jot.app.ui.EditorShortcuts
+import com.noted.app.ui.EditorShortcut
+import com.noted.app.ui.EditorShortcuts
 import kotlin.math.roundToInt
 
 /** Los atajos de teclado de un ítem de checklist. */

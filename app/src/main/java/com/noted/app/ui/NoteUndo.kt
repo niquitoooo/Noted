@@ -1,9 +1,9 @@
-package com.jot.app.ui
+package com.noted.app.ui
 
 import androidx.compose.ui.text.TextRange
-import com.jot.app.data.NotesRepository
-import com.jot.app.ui.rich.RichText
-import com.jot.app.ui.rich.toHtml
+import com.noted.app.data.NotesRepository
+import com.noted.app.ui.rich.RichText
+import com.noted.app.ui.rich.toHtml
 
 /**
  * Dónde está el cursor en una foto del cuerpo: el bloque, el ítem de checklist si el foco está

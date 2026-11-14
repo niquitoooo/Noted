@@ -1,4 +1,4 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -77,29 +77,29 @@ class NoteIOBookmarksTest {
 
     @Test
     fun bodyWithMarkAndHeaderBecomesACard() {
-        val md = "<!-- jot:bookmark b2 -->\n[Solo](https://example.org)\n"
+        val md = "<!-- noted:bookmark b2 -->\n[Solo](https://example.org)\n"
         val html = runBlocking { NoteIO.markdownFileToBody(md, listOf(bare)) { _, _ -> null } }
-        assertTrue(html, html.contains("data-jot-bookmark=\"b2\""))
+        assertTrue(html, html.contains("data-noted-bookmark=\"b2\""))
     }
 
     @Test
     fun bodyWithMarkButNoCardStaysATextLink() {
-        val md = "<!-- jot:bookmark b2 -->\n[Solo](https://example.org)\n"
+        val md = "<!-- noted:bookmark b2 -->\n[Solo](https://example.org)\n"
         val html = runBlocking { NoteIO.markdownFileToBody(md, emptyList()) { _, _ -> null } }
-        assertFalse(html, html.contains("data-jot-bookmark"))
+        assertFalse(html, html.contains("data-noted-bookmark"))
         assertTrue(html, html.contains("https://example.org"))
     }
 
     @Test
     fun unsafeIdGetsANewOneAndTheMarkFollows() {
-        val md = "<!-- jot:bookmark ../x -->\n[Solo](https://example.org)\n"
+        val md = "<!-- noted:bookmark ../x -->\n[Solo](https://example.org)\n"
         val (bookmarks, body) = NoteIO.safeBookmarks(
             listOf(NoteIO.ImportedBookmark("../x", "https://example.org", "Solo", "", null, null, null)), md
         )
         val newId = bookmarks.single().id
-        assertTrue(com.jot.app.data.NotesRepository.isSafeId(newId))
+        assertTrue(com.noted.app.data.NotesRepository.isSafeId(newId))
         assertNotEquals("../x", newId)
-        assertTrue(body.contains("<!-- jot:bookmark $newId -->"))
+        assertTrue(body.contains("<!-- noted:bookmark $newId -->"))
         assertFalse(body.contains("../x"))
     }
 
@@ -107,14 +107,14 @@ class NoteIOBookmarksTest {
     fun cardInHeaderWithoutMarkGoesAtTheEnd() {
         val a = NoteIO.ImportedBookmark("a1", "https://a.com", "A", "", null, null, null)
         val b = NoteIO.ImportedBookmark("b1", "https://b.com", "B", "", null, null, null)
-        val md = "Hola\n\n<!-- jot:bookmark a1 -->\n[A](https://a.com)\n"
+        val md = "Hola\n\n<!-- noted:bookmark a1 -->\n[A](https://a.com)\n"
         val body = NoteIO.withMissingMarks(listOf(a, b), md)
         val cards = listOf(
             Bookmark(id = "a1", url = "https://a.com", title = "A"),
             Bookmark(id = "b1", url = "https://b.com", title = "B")
         )
         val html = runBlocking { NoteIO.markdownFileToBody(body, cards) { _, _ -> null } }
-        val ids = Regex("data-jot-bookmark=\"([^\"]+)\"").findAll(html).map { it.groupValues[1] }.toList()
+        val ids = Regex("data-noted-bookmark=\"([^\"]+)\"").findAll(html).map { it.groupValues[1] }.toList()
         assertEquals(html, listOf("a1", "b1"), ids)
     }
 
@@ -134,7 +134,7 @@ class NoteIOBookmarksTest {
         assertTrue(fixed.all { NotesRepository.isSafeId(it.id) })
         assertNotEquals(fixed[0].id, fixed[1].id)
         val withMarks = NoteIO.withMissingMarks(fixed, body)
-        assertTrue(fixed.all { withMarks.contains("<!-- jot:bookmark ${it.id} -->") })
+        assertTrue(fixed.all { withMarks.contains("<!-- noted:bookmark ${it.id} -->") })
     }
 
     @Test

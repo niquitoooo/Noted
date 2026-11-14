@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.Editable
 import android.text.NoCopySpan
@@ -243,7 +243,7 @@ object MarkdownShortcuts {
     private val DELIMITERS: List<Pair<String, () -> InlineMark>> = listOf(
         "**" to { BoldMark() },
         "~~" to { StrikeMark("s") }, // El Markdown da `<s>`
-        "==" to { HighlightMark(null) }, // el verde, `jot-highlight`
+        "==" to { HighlightMark(null) }, // el verde, `noted-highlight`
         "*" to { ItalicMark() },
         "_" to { ItalicMark() },
         "`" to { CodeMark() },

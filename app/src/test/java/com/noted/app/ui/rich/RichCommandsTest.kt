@@ -1,4 +1,4 @@
-package com.jot.app.ui.rich
+package com.noted.app.ui.rich
 
 import android.text.SpannableStringBuilder
 import androidx.compose.ui.text.TextRange
@@ -284,7 +284,7 @@ class RichCommandsTest {
     @Test
     fun setTextColorOnSelection() {
         val red = RichCommands.setTextColor(rich("<div>abc</div>", 0, 2), "red")
-        assertEquals("<div><span class=\"jot-text-red\">ab</span>c</div>", RichHtml.toHtml(red.text))
+        assertEquals("<div><span class=\"noted-text-red\">ab</span>c</div>", RichHtml.toHtml(red.text))
         assertEquals(TextRange(0, 2), red.selection)
 
         // Otro color reemplaza al de antes; null lo saca.
@@ -295,13 +295,13 @@ class RichCommandsTest {
 
     @Test
     fun setHighlightGreenHasNoSuffix() {
-        // El verde es `jot-highlight` sin sufijo.
+        // El verde es `noted-highlight` sin sufijo.
         val green = RichCommands.setHighlight(rich("<div>abc</div>", 0, 3), "green")
-        assertEquals("<div><span class=\"jot-highlight\">abc</span></div>", RichHtml.toHtml(green.text))
+        assertEquals("<div><span class=\"noted-highlight\">abc</span></div>", RichHtml.toHtml(green.text))
 
         val red = RichCommands.setHighlight(green.withSelection(TextRange(0, 1)), "red")
         assertEquals(
-            "<div><span class=\"jot-highlight-red\">a</span><span class=\"jot-highlight\">bc</span></div>",
+            "<div><span class=\"noted-highlight-red\">a</span><span class=\"noted-highlight\">bc</span></div>",
             RichHtml.toHtml(red.text),
         )
         assertEquals("p|abc", RichCommands.setHighlight(red.withSelection(TextRange(0, 3)), null).described())
@@ -329,7 +329,7 @@ class RichCommandsTest {
         assertEquals("p|ab{color=red}{hl=green}x{/hl}{/color}", RichDebug.describe(text))
 
         // "Sin color" sin selección corta desde el cursor: lo anterior queda.
-        val inRed = RichText.fromHtml("<div><span class=\"jot-text-red\">ab</span></div>")
+        val inRed = RichText.fromHtml("<div><span class=\"noted-text-red\">ab</span></div>")
         val cleared = RichCommands.setTextColor(inRed, null)
         assertEquals(PendingColor(null, null, clearText = true, clearHighlight = false), cleared.pendingColor)
         val (plainAfter, _) = typeInto(cleared, "x")
@@ -340,7 +340,7 @@ class RichCommandsTest {
     fun colorContinuesAfterEnter() {
         // Después de Enter siguen el color y el resaltado (deja sin efecto R43).
         val value = RichText.fromHtml(
-            "<div><span class=\"jot-text-red\"><span class=\"jot-highlight-blue\">ab</span></span></div>",
+            "<div><span class=\"noted-text-red\"><span class=\"noted-highlight-blue\">ab</span></span></div>",
         )
         val (text, result) = typeInto(value, "\n")
         assertEquals(PendingColor("red", "blue", clearText = false, clearHighlight = false), result.pendingColor)
@@ -363,7 +363,7 @@ class RichCommandsTest {
     fun removeFormatClearsColorsAndInline() {
         // Saca color, resaltado y el formato en línea; el enlace queda.
         val value = rich(
-            "<div><b><span class=\"jot-text-red\">ab</span></b><i><span class=\"jot-highlight\">c</span></i>" +
+            "<div><b><span class=\"noted-text-red\">ab</span></b><i><span class=\"noted-highlight\">c</span></i>" +
                 "<a href=\"https://x.y\">d</a></div>",
             0, 4,
         )
@@ -372,7 +372,7 @@ class RichCommandsTest {
         assertEquals(TextRange(0, 4), removed.selection)
 
         // Sin selección corta el formato alrededor desde el cursor.
-        val cursor = RichCommands.removeFormat(rich("<div><b><span class=\"jot-text-red\">ab</span></b></div>", 2))
+        val cursor = RichCommands.removeFormat(rich("<div><b><span class=\"noted-text-red\">ab</span></b></div>", 2))
         assertEquals(false, cursor.pending[InlineFormat.Bold])
         assertEquals(PendingColor(null, null, clearText = true, clearHighlight = true), cursor.pendingColor)
     }

@@ -1,4 +1,4 @@
-package com.jot.app.data
+package com.noted.app.data
 
 import android.content.Context
 import android.database.Cursor
@@ -6,15 +6,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.OpenableColumns
-import com.jot.app.data.db.HistoryCodec
-import com.jot.app.data.db.NoteHistoryEntity
-import com.jot.app.data.db.NotebookEntity
-import com.jot.app.data.db.NotesDatabase
-import com.jot.app.data.db.SearchKey
-import com.jot.app.data.db.toEntity
-import com.jot.app.data.db.toNote
-import com.jot.app.data.html.NoteHtml
-import com.jot.app.data.html.withDerived
+import com.noted.app.data.db.HistoryCodec
+import com.noted.app.data.db.NoteHistoryEntity
+import com.noted.app.data.db.NotebookEntity
+import com.noted.app.data.db.NotesDatabase
+import com.noted.app.data.db.SearchKey
+import com.noted.app.data.db.toEntity
+import com.noted.app.data.db.toNote
+import com.noted.app.data.html.NoteHtml
+import com.noted.app.data.html.withDerived
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +47,7 @@ class NotesRepository internal constructor(
 
     private val appContext = context.applicationContext
     private val dao = db.dao()
-    private val prefs = appContext.getSharedPreferences("jot", Context.MODE_PRIVATE)
+    private val prefs = appContext.getSharedPreferences("noted", Context.MODE_PRIVATE)
     private val attachmentsRoot = File(appContext.filesDir, "attachments").apply { mkdirs() }
     private val bookmarksRoot = File(appContext.filesDir, "bookmarks").apply { mkdirs() }
     private val iconsRoot = File(appContext.filesDir, "icons").apply { mkdirs() }
@@ -1303,7 +1303,7 @@ class NotesRepository internal constructor(
             Regex("(?m)^```[^\\n]*\\n[\\s\\S]*?(^```[^\\n]*$|\\z)"),
             Regex("`[^`\\n]*`"),
             Regex("<!--[\\s\\S]*?-->"),
-            Regex("\\[[^\\]\\n]*]\\(jot://[^)\\s]*\\)"),
+            Regex("\\[[^\\]\\n]*]\\(noted://[^)\\s]*\\)"),
             Regex("]\\([^)\\s]*\\)"),
             Regex("[a-zA-Z][a-zA-Z0-9+.-]*://\\S+"),
             Regex("www\\.\\S+")
