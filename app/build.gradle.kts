@@ -22,11 +22,11 @@ val keystoreProps = Properties().apply {
 }
 
 android {
-    namespace = "com.jot.app"
+    namespace = "com.noted.app"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.jot.app"
+        applicationId = "com.noted.app"
         minSdk = 26
         targetSdk = 35
         versionCode = 2

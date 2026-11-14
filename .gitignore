@@ -17,7 +17,7 @@ captures/
 /shot-*.png
 /build-log*.txt
 /ui*.xml
-/Jot.apk
+/Noted.apk
 *.h264
 # Bases reales para el benchmark de escala: no van a git.
 /app/src/test/datos-reales/

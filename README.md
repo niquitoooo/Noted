@@ -1,4 +1,4 @@
-# Jot
+# Noted
 
 App de notas para Android, local-first y open source. Sin cuenta ni servidor: todo
 queda en el aparato.
@@ -25,7 +25,7 @@ queda en el aparato.
 - **Deshacer y rehacer** de toda la nota, e historial de versiones del cuerpo.
 - **Teclado físico**: atajos con Ctrl, flechas entre bloques y selección con Shift.
 - **Importar y exportar en Markdown**, con los adjuntos en una carpeta aparte.
-- **Compartir a Jot** desde cualquier app (fotos, videos, PDFs, texto).
+- **Compartir a Noted** desde cualquier app (fotos, videos, PDFs, texto).
 - **Material You 3** con color dinámico en Android 12+; en tablets el contenido se
   centra con un ancho máximo legible.
 
@@ -33,7 +33,7 @@ queda en el aparato.
 
 Todo queda en el almacenamiento privado de la app:
 
-- `databases/jot.db` (Room): una fila por nota con el HTML, campos derivados para
+- `databases/noted.db` (Room): una fila por nota con el HTML, campos derivados para
   la lista y la búsqueda, y el historial de versiones.
 - `files/attachments/<noteId>/`: adjuntos, sin límite de tamaño.
 - `files/covers/`, `files/bookmarks/` y `files/icons/`: portadas, tarjetas e íconos.
