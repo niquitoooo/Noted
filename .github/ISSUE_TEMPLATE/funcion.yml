@@ -1,0 +1,27 @@
+name: Pedir una función
+description: Una idea para que Noted haga algo nuevo.
+title: "[Idea] "
+labels: ["idea"]
+body:
+  - type: textarea
+    id: que-queres
+    attributes:
+      label: Qué te gustaría poder hacer
+      placeholder: Poder ordenar los cuadernos por color.
+    validations:
+      required: true
+  - type: textarea
+    id: para-que
+    attributes:
+      label: Para qué te sirve
+      description: En qué momento lo usarías.
+  - type: textarea
+    id: como
+    attributes:
+      label: Cómo te lo imaginás
+      description: Si tenés una idea de cómo se vería, o una app que lo haga.
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Noted
+      placeholder: "1.1.0"

@@ -32,6 +32,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -623,6 +624,18 @@ fun NotesListScreen(
                     onClick = {
                         scope.launch { drawerState.close() }
                         importLauncher.launch(null)
+                    },
+                    colors = drawerColors,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
+                // Versión, código y formularios para reportar fallos o pedir funciones.
+                NavigationDrawerItem(
+                    label = { Text("Acerca de Noted") },
+                    icon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        context.startActivity(android.content.Intent(context, com.noted.app.AboutActivity::class.java))
                     },
                     colors = drawerColors,
                     modifier = Modifier.padding(horizontal = 10.dp)

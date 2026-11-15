@@ -1,0 +1,50 @@
+name: Reportar un fallo
+description: Algo no anda como debería.
+title: "[Fallo] "
+labels: ["fallo"]
+body:
+  - type: textarea
+    id: que-paso
+    attributes:
+      label: Qué pasó
+      description: Contá qué viste.
+      placeholder: Al pegar una foto en la nota, aparece como archivo.
+    validations:
+      required: true
+  - type: textarea
+    id: que-esperabas
+    attributes:
+      label: Qué esperabas que pasara
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Cómo repetirlo
+      description: Los pasos, uno por renglón.
+      placeholder: |
+        1. Abrir una nota
+        2. Pegar una foto desde el teclado
+        3. …
+  - type: input
+    id: version
+    attributes:
+      label: Versión de Noted
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: telefono
+    attributes:
+      label: Teléfono
+      placeholder: Pixel 9 Pro
+  - type: input
+    id: android
+    attributes:
+      label: Versión de Android
+      placeholder: "16"
+  - type: textarea
+    id: capturas
+    attributes:
+      label: Capturas o videos
+      description: Si podés, arrastralos acá.
