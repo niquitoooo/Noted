@@ -274,7 +274,13 @@ internal fun releaseAndDiscard(
     if (attachments.isEmpty() && bookmarks.isEmpty() && repository.isFreshAndBlank(noteId)) {
         repository.releaseUnusedContents(noteId, attachments, bookmarks)
     } else {
-        repository.releaseUnusedContents(noteId, undo.attachmentIdsInUse(), undo.bookmarkIdsInUse())
+        repository.releaseUnusedContents(
+            noteId,
+            undo.attachmentIdsInUse(),
+            undo.bookmarkIdsInUse(),
+            undo.attachmentIdsInUse() - attachments,
+            undo.bookmarkIdsInUse() - bookmarks,
+        )
     }
     val discarded = repository.discardIfEmpty(noteId)
     if (discarded) stacks.drop(noteId)

@@ -411,8 +411,13 @@ class NotesViewModel(application: Application) : AndroidViewModel(application) {
     fun currentNote(noteId: String): Note? = repository.findNote(noteId)
 
     /** Al cerrar la nota: aparta los adjuntos y tarjetas que el cuerpo final no usa. */
-    fun releaseUnusedContents(noteId: String, usedAttachmentIds: Set<String>, usedBookmarkIds: Set<String>) =
-        repository.releaseUnusedContents(noteId, usedAttachmentIds, usedBookmarkIds)
+    fun releaseUnusedContents(
+        noteId: String,
+        usedAttachmentIds: Set<String>,
+        usedBookmarkIds: Set<String>,
+        heldAttachmentIds: Set<String>,
+        heldBookmarkIds: Set<String>,
+    ) = repository.releaseUnusedContents(noteId, usedAttachmentIds, usedBookmarkIds, heldAttachmentIds, heldBookmarkIds)
 
     /**
      * Copia los archivos elegidos al almacenamiento privado y devuelve los

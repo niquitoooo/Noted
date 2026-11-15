@@ -420,7 +420,14 @@ fun NoteEditorScreen(
      * sin tocar guarda su cuerpo de antes, que puede no nombrar sus adjuntos aunque se vean al final.
      */
     fun releaseUnused() {
-        vm.releaseUnusedContents(note.id, editorUndo.attachmentIdsInUse(), editorUndo.bookmarkIdsInUse())
+        vm.releaseUnusedContents(
+            note.id,
+            editorUndo.attachmentIdsInUse(),
+            editorUndo.bookmarkIdsInUse(),
+            // Lo que solo nombra la pila: si la app se cierra, al volver se aparta.
+            editorUndo.attachmentIdsInUse() - editorUndo.blockAttachmentIds(),
+            editorUndo.bookmarkIdsInUse() - editorUndo.blockBookmarkIds(),
+        )
     }
 
     fun leave() {

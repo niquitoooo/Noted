@@ -125,6 +125,37 @@ class BookmarkFaviconTest {
     }
 
     @Test
+    fun cardKeptOnlyForUndoIsGoneAfterRestart() = runBlocking {
+        val repo = repository()
+        val note = repo.createNote()
+        val saved = repo.addKnownBookmark(note.id, card(id = "k6"), source("a.png"), source("b.png"))
+        // Se quitó del cuerpo; la pila de deshacer todavía la nombra, así que se conserva.
+        repo.update(note.id) { it.copy(body = "<div>texto</div>") }
+        repo.releaseUnusedContents(note.id, emptySet(), setOf(saved.id), heldBookmarkIds = setOf(saved.id))
+        assertEquals(1, repo.findNote(note.id)!!.bookmarks.size)
+        repo.flushAndWait()
+
+        // La app se cerró: la pila se perdió y la tarjeta ya no vuelve.
+        val again = repository()
+        assertTrue(again.findNote(note.id)!!.bookmarks.isEmpty())
+        assertFalse(again.bookmarkImageFile(saved)!!.exists())
+    }
+
+    @Test
+    fun cardKeptForUndoAndPutBackStays() = runBlocking {
+        val repo = repository()
+        val note = repo.createNote()
+        val saved = repo.addKnownBookmark(note.id, card(id = "k7"), null, null)
+        repo.releaseUnusedContents(note.id, emptySet(), setOf(saved.id), heldBookmarkIds = setOf(saved.id))
+        // Deshacer la devolvió al cuerpo antes de cerrar la app.
+        repo.update(note.id) { it.copy(body = "<div data-noted-bookmark=\"k7\"></div>") }
+        repo.flushAndWait()
+
+        val again = repository()
+        assertEquals(listOf("k7"), again.findNote(note.id)!!.bookmarks.map { it.id })
+    }
+
+    @Test
     fun emptyTrashDeletesFavicon() = runBlocking {
         val repo = repository()
         val note = repo.createNote()

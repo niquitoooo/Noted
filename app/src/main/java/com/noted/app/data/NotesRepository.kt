@@ -32,6 +32,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.File
 import java.util.UUID
 
@@ -227,6 +229,8 @@ class NotesRepository internal constructor(
             _notebooksTrashed.value = storedTrashed
         }
         writable = true
+        // Antes de avisar que cargó: el editor no tiene que ver lo que se aparta.
+        if (migration?.damaged != true) releaseHeldForUndo()
         loaded.complete(Unit)
         // Si el archivo vino dañado faltan notas: no se puede saber qué íconos sobran.
         if (migration?.damaged != true) {
@@ -1077,9 +1081,16 @@ class NotesRepository internal constructor(
      * deshacer la quita los devuelva. Con un adjunto o un enlace cargándose no se toca nada: el
      * que llega todavía no está en el cuerpo.
      */
-    fun releaseUnusedContents(noteId: String, usedAttachmentIds: Set<String>, usedBookmarkIds: Set<String>) {
+    fun releaseUnusedContents(
+        noteId: String,
+        usedAttachmentIds: Set<String>,
+        usedBookmarkIds: Set<String>,
+        heldAttachmentIds: Set<String> = emptySet(),
+        heldBookmarkIds: Set<String> = emptySet(),
+    ) {
         if (busyNotes.containsKey(noteId)) return
         val note = findNote(noteId) ?: return
+        rememberHeldForUndo(noteId, heldAttachmentIds + heldBookmarkIds)
         val attachments = note.attachments.filterNot { it.id in usedAttachmentIds }
         val bookmarks = note.bookmarks.filterNot { it.id in usedBookmarkIds }
         if (attachments.isEmpty() && bookmarks.isEmpty()) return
@@ -1093,6 +1104,37 @@ class NotesRepository internal constructor(
                 bookmarks = current.bookmarks.filterNot { it.id in bookmarkIds },
             )
         }
+    }
+
+    /**
+     * Lo que una nota conserva solo para que deshacer lo devuelva ([releaseUnusedContents]): la
+     * pila de deshacer vive mientras la app está abierta. Se anota en las preferencias para que,
+     * si la app se cierra, al volver a abrirla se aparte ([releaseHeldForUndo]) en vez de
+     * aparecer otra vez al final de la nota.
+     */
+    private fun rememberHeldForUndo(noteId: String, ids: Set<String>) {
+        val all = runCatching { JSONObject(prefs.getString(HELD_FOR_UNDO, null) ?: "{}") }.getOrElse { JSONObject() }
+        if (ids.isEmpty()) all.remove(noteId) else all.put(noteId, JSONArray(ids.toList()))
+        prefs.edit().putString(HELD_FOR_UNDO, all.toString()).apply()
+    }
+
+    /** Al abrir la app: aparta lo que se conservaba solo para deshacer y el cuerpo no nombra. */
+    private fun releaseHeldForUndo() {
+        val raw = prefs.getString(HELD_FOR_UNDO, null) ?: return
+        val all = runCatching { JSONObject(raw) }.getOrNull()
+        all?.keys()?.forEach { noteId ->
+            val array = all.optJSONArray(noteId) ?: return@forEach
+            val ids = (0 until array.length()).map { array.getString(it) }.toSet()
+            val note = findNote(noteId) ?: return@forEach
+            val gone = ids.filterNot { it in note.body }.toSet()
+            if (gone.isEmpty()) return@forEach
+            releaseUnusedContents(
+                noteId,
+                note.attachments.map { it.id }.toSet() - gone,
+                note.bookmarks.map { it.id }.toSet() - gone,
+            )
+        }
+        prefs.edit().remove(HELD_FOR_UNDO).apply()
     }
 
     private fun queryDisplayName(uri: Uri): String? {
@@ -1272,6 +1314,9 @@ class NotesRepository internal constructor(
 
         /** Versiones viejas del cuerpo que se guardan por nota. */
         private const val HISTORY_KEEP = 50
+
+        /** Preferencia con lo que cada nota conserva solo para deshacer: id de nota → ids. */
+        private const val HELD_FOR_UNDO = "heldForUndo"
 
         private val SAFE_ID = Regex("^[A-Za-z0-9_-]{1,80}$")
 
