@@ -1,19 +1,32 @@
 package com.noted.app
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
+import android.webkit.MimeTypeMap
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.content.MediaType
+import androidx.compose.foundation.content.consume
+import androidx.compose.foundation.content.contentReceiver
+import androidx.compose.foundation.content.hasMediaType
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +40,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -47,6 +62,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -55,6 +71,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -67,7 +85,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.noted.app.data.NotesRepository
 import com.noted.app.data.SharedLink
 import com.noted.app.ui.NotedTheme
+import coil.compose.AsyncImage
 import kotlinx.coroutines.delay
+import java.io.File
+import java.util.UUID
 
 /**
  * Compartir texto o un link con Noted: un
@@ -86,6 +107,9 @@ class ShareActivity : ComponentActivity() {
             return
         }
         enableEdgeToEdge()
+        // Fotos de diálogos que se cerraron sin guardar: se borran al día siguiente.
+        val dayAgo = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
+        File(cacheDir, "compartir").listFiles()?.filter { it.lastModified() < dayAgo }?.forEach { it.delete() }
         val shared = SharedLink(
             subject = intent.getCharSequenceExtra(Intent.EXTRA_SUBJECT)?.toString().orEmpty(),
             text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString().orEmpty(),
@@ -135,7 +159,10 @@ private fun ShareScreen(
 ) {
     var phase by rememberSaveable { mutableStateOf(SharePhase.Editing) }
     var title by rememberSaveable { mutableStateOf(shared.subject) }
-    var text by rememberSaveable { mutableStateOf(shared.text) }
+    val text = rememberTextFieldState(shared.text)
+    // Fotos que llegan del teclado o del portapapeles, ya copiadas a la caché.
+    val images = remember { mutableStateListOf<SharedImage>() }
+    val context = LocalContext.current
     var notebook by rememberSaveable { mutableStateOf<String?>(null) }
     var savedId by rememberSaveable { mutableStateOf<String?>(null) }
     val order by repository.notebookOrder.collectAsStateWithLifecycle()
@@ -168,11 +195,12 @@ private fun ShareScreen(
                 title = title,
                 onTitle = { title = it },
                 text = text,
-                onText = { text = it },
+                images = images,
+                onImage = { uri -> copySharedImage(context, uri)?.let { images.add(it); true } ?: false },
                 notebook = notebook,
                 onNotebooks = { phase = SharePhase.Notebooks },
                 onSave = {
-                    val note = repository.saveShared(SharedLink(title, text), notebook)
+                    val note = repository.saveShared(SharedLink(title, text.text.toString()), notebook, images.map { it.file })
                     savedId = note.id
                     phase = SharePhase.Saved
                 },
@@ -191,13 +219,15 @@ private fun ShareScreen(
 }
 
 /** El diálogo: encabezado con el título (y el sitio si es un link), texto y botones. */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ShareDialog(
     shared: SharedLink,
     title: String,
     onTitle: (String) -> Unit,
-    text: String,
-    onText: (String) -> Unit,
+    text: TextFieldState,
+    images: List<SharedImage>,
+    onImage: (Uri) -> Boolean,
     notebook: String?,
     onNotebooks: () -> Unit,
     onSave: () -> Unit,
@@ -228,17 +258,25 @@ private fun ShareDialog(
             TitleField(title, onTitle, titleStyle, Modifier.heightIn(min = 60.4.dp).padding(start = 14.dp, end = 14.dp, top = 19.dp, bottom = 9.dp))
         }
         HorizontalDivider(color = colors.outlineVariant)
+        // Fotos y texto se desplazan; el título y la fila de Guardar quedan siempre a la vista.
+        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+        if (images.isNotEmpty()) SharedImagesRow(images)
         BasicTextField(
-            value = text,
-            onValueChange = onText,
+            state = text,
             textStyle = TextStyle(color = colors.onSurface, fontSize = 16.sp, lineHeight = 1.1.em),
             cursorBrush = SolidColor(colors.primary),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, autoCorrectEnabled = true),
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 52.dp)
+                // Las fotos del teclado o del portapapeles se suman arriba del texto.
+                .contentReceiver { content ->
+                    if (!content.hasMediaType(MediaType.Image)) return@contentReceiver content
+                    content.consume { item -> item.uri?.let(onImage) ?: false }
+                }
                 .padding(start = 16.dp, end = 14.dp, top = 15.5.dp, bottom = 14.dp),
         )
+        }
         Row(
             Modifier.fillMaxWidth().padding(end = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -267,6 +305,56 @@ private fun ShareDialog(
             }
             // 88 dp de ancho.
             Button(onClick = onSave, contentPadding = PaddingValues(horizontal = 20.dp)) { Text("Guardar", fontSize = 14.sp) }
+        }
+    }
+}
+
+/** Una foto compartida: la copia en la caché y su proporción ancho / alto. */
+private class SharedImage(val file: File, val aspect: Double)
+
+/** Copia [uri] a la caché mientras dura el permiso del teclado; null si no es una imagen legible. */
+private fun copySharedImage(context: Context, uri: Uri): SharedImage? = runCatching {
+    val dir = File(context.cacheDir, "compartir").apply { mkdirs() }
+    val type = context.contentResolver.getType(uri).orEmpty()
+    val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(type) ?: "jpg"
+    val file = File(dir, "${UUID.randomUUID()}.$extension")
+    context.contentResolver.openInputStream(uri)!!.use { input -> file.outputStream().use { input.copyTo(it) } }
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(file.path, bounds)
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+        file.delete()
+        return null
+    }
+    SharedImage(file, bounds.outWidth.toDouble() / bounds.outHeight)
+}.getOrNull()
+
+/**
+ * Hasta tres fotos en una fila, todas del mismo alto y cada una con su proporción, separadas por
+ * 4 dp. Si hay más, la tercera lleva «Más de N» encima.
+ */
+@Composable
+private fun SharedImagesRow(images: List<SharedImage>) {
+    val shown = images.take(3)
+    val gap = 4.dp
+    BoxWithConstraints(Modifier.fillMaxWidth().padding(start = 14.dp, end = 14.dp, top = 14.dp)) {
+        val height = (maxWidth - gap * (shown.size - 1)) / shown.sumOf { it.aspect }.toFloat()
+        Row(horizontalArrangement = Arrangement.spacedBy(gap)) {
+            shown.forEachIndexed { index, image ->
+                Box(Modifier.height(height).width(height * image.aspect.toFloat())) {
+                    AsyncImage(
+                        model = image.file,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    if (index == 2 && images.size > 3) {
+                        Box(
+                            Modifier.fillMaxSize().background(Color(0x89000000)),
+                            contentAlignment = Alignment.Center,
+                        ) { Text("Más de ${images.size - 3}", color = Color.White, fontSize = 16.sp) }
+                    }
+                }
+            }
         }
     }
 }
@@ -355,7 +443,7 @@ private fun PickerRow(icon: ImageVector, name: String, checked: Boolean, onPick:
 
 /** El contenedor del diálogo: esquinas de 28 dp, 34,7 dp a los costados. */
 @Composable
-private fun DialogCard(content: @Composable () -> Unit) {
+private fun DialogCard(content: @Composable ColumnScope.() -> Unit) {
     val noRipple = remember { MutableInteractionSource() }
     Surface(
         shape = RoundedCornerShape(28.dp),

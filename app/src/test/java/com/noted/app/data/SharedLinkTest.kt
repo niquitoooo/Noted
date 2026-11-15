@@ -63,6 +63,28 @@ class SharedLinkTest {
     }
 
     @Test
+    fun sharedImagesGoAboveTheTextAndTheCopiesAreDeleted() = runBlocking {
+        val repo = repository()
+        val note = repo.saveShared(SharedLink("Fotos", "texto"), null)
+        val dir = java.io.File(context.cacheDir, "compartir").apply { mkdirs() }
+        val png = android.graphics.Bitmap.createBitmap(4, 2, android.graphics.Bitmap.Config.ARGB_8888)
+        val files = listOf("a.png", "b.png").map { name ->
+            java.io.File(dir, name).also { f -> f.outputStream().use { png.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) } }
+        }
+
+        repo.addSharedImages(note.id, files)
+
+        val saved = repo.findNote(note.id)!!
+        assertEquals(2, saved.attachments.size)
+        // Las dos fotos, en su orden, antes del texto.
+        val first = saved.body.indexOf(saved.attachments[0].id)
+        val second = saved.body.indexOf(saved.attachments[1].id)
+        assertTrue(first in 0 until second)
+        assertTrue(second < saved.body.indexOf("texto"))
+        assertTrue(files.none { it.exists() })
+    }
+
+    @Test
     fun withoutSubjectTheNoteHasNoTitle() {
         val repo = repository()
         val note = repo.saveShared(SharedLink("", "solo texto"), null)

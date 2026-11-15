@@ -1012,9 +1012,10 @@ class NotesRepository internal constructor(
     /**
      * Guarda lo compartido desde otra app como una nota nueva: título = asunto, cuerpo = el texto
      * tal cual, en [notebook], primera de la lista. Si el texto es solo un link, la tarjeta se arma
-     * después, en segundo plano ([addSharedCard]).
+     * después, en segundo plano ([addSharedCard]). Las [images] (archivos ya copiados por quien
+     * llama) se agregan como adjuntos, arriba del texto, y después se borran.
      */
-    fun saveShared(shared: SharedLink, notebook: String?): Note {
+    fun saveShared(shared: SharedLink, notebook: String?, images: List<File> = emptyList()): Note {
         val note = createNote(notebook = notebook)
         val now = System.currentTimeMillis()
         update(note.id) {
@@ -1025,8 +1026,31 @@ class NotesRepository internal constructor(
                 updatedAt = now,
             )
         }
-        shared.url?.let { url -> scope.launch { addSharedCard(note.id, url) } }
+        val url = shared.url
+        if (images.isNotEmpty() || url != null) {
+            scope.launch {
+                if (images.isNotEmpty()) addSharedImages(note.id, images)
+                url?.let { addSharedCard(note.id, it) }
+            }
+        }
         return findNote(note.id) ?: note
+    }
+
+    /** Las fotos compartidas, como adjuntos al principio del cuerpo, en su orden. */
+    internal suspend fun addSharedImages(noteId: String, images: List<File>) {
+        val added = images.mapNotNull { file ->
+            try {
+                addAttachment(noteId, Uri.fromFile(file))
+            } finally {
+                file.delete()
+            }
+        }
+        if (added.isEmpty()) return
+        update(noteId) { note ->
+            val holder = org.jsoup.Jsoup.parseBodyFragment("").apply { outputSettings().prettyPrint(false) }.body()
+            added.forEach { com.noted.app.data.html.appendAttachment(it, holder) }
+            note.copy(body = holder.html() + note.body)
+        }
     }
 
     /** La tarjeta del link compartido, al final del cuerpo de la nota. */
