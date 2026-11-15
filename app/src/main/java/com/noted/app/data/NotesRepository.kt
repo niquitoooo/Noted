@@ -1040,7 +1040,12 @@ class NotesRepository internal constructor(
     internal suspend fun addSharedImages(noteId: String, images: List<File>) {
         val added = images.mapNotNull { file ->
             try {
-                addAttachment(noteId, Uri.fromFile(file))
+                // El tipo sale de la imagen misma: la copia puede no tener extensión ni tipo.
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                file.inputStream().use { BitmapFactory.decodeStream(it, null, bounds) }
+                val mime = bounds.outMimeType ?: "image/jpeg"
+                val extension = android.webkit.MimeTypeMap.getSingleton().getExtensionFromMimeType(mime) ?: "jpg"
+                addAttachment(noteId, Uri.fromFile(file), knownName = "imagen.$extension", knownMime = mime)
             } finally {
                 file.delete()
             }

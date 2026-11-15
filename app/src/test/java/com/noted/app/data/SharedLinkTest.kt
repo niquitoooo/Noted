@@ -12,8 +12,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.GraphicsMode
 
 @RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
 class SharedLinkTest {
 
     private lateinit var context: Context
@@ -68,7 +70,7 @@ class SharedLinkTest {
         val note = repo.saveShared(SharedLink("Fotos", "texto"), null)
         val dir = java.io.File(context.cacheDir, "compartir").apply { mkdirs() }
         val png = android.graphics.Bitmap.createBitmap(4, 2, android.graphics.Bitmap.Config.ARGB_8888)
-        val files = listOf("a.png", "b.png").map { name ->
+        val files = listOf("a", "b").map { name ->
             java.io.File(dir, name).also { f -> f.outputStream().use { png.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) } }
         }
 
@@ -76,6 +78,10 @@ class SharedLinkTest {
 
         val saved = repo.findNote(note.id)!!
         assertEquals(2, saved.attachments.size)
+        // Una foto queda como imagen, con nombre, aunque la copia no tenga tipo.
+        assertTrue(saved.attachments.all { it.isImage })
+        assertEquals("image/png", saved.attachments[0].mime)
+        assertTrue(saved.attachments[0].name.startsWith("imagen"))
         // Las dos fotos, en su orden, antes del texto.
         val first = saved.body.indexOf(saved.attachments[0].id)
         val second = saved.body.indexOf(saved.attachments[1].id)
