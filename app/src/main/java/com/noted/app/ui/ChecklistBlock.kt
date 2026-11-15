@@ -167,12 +167,12 @@ internal fun checklistLines(rows: ChecklistRows, collapsed: Boolean): List<Check
 /** Duración del fundido de la fila marcada y del deslizamiento de las de abajo. */
 private const val TOGGLE_MS = 250
 
-/** `DecelerateInterpolator` (H1, Restricciones globales). */
+/** `DecelerateInterpolator`. */
 private val Decelerate = Easing { 1f - (1f - it) * (1f - it) }
 
 /**
  * El fundido de `animate().alpha(0f)` sin interpolador propio: el de la plataforma por
- * defecto, `AccelerateDecelerateInterpolator` (H1 da la duración, no la curva).
+ * defecto, `AccelerateDecelerateInterpolator`.
  */
 private val AccelerateDecelerate = Easing { (cos((it + 1f) * PI) / 2.0 + 0.5).toFloat() }
 

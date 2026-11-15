@@ -1009,6 +1009,36 @@ class NotesRepository internal constructor(
             bookmark
         }
 
+    /**
+     * Guarda lo compartido desde otra app como una nota nueva: título = asunto, cuerpo = el texto
+     * tal cual, en [notebook], primera de la lista. Si el texto es solo un link, la tarjeta se arma
+     * después, en segundo plano ([addSharedCard]).
+     */
+    fun saveShared(shared: SharedLink, notebook: String?): Note {
+        val note = createNote(notebook = notebook)
+        val now = System.currentTimeMillis()
+        update(note.id) {
+            it.copy(
+                title = shared.subject.trim(),
+                body = com.noted.app.data.html.NoteMarkdown.toHtml(shared.text, emptyList(), emptyList(), inlineMarks = false),
+                createdAt = now,
+                updatedAt = now,
+            )
+        }
+        shared.url?.let { url -> scope.launch { addSharedCard(note.id, url) } }
+        return findNote(note.id) ?: note
+    }
+
+    /** La tarjeta del link compartido, al final del cuerpo de la nota. */
+    internal suspend fun addSharedCard(noteId: String, url: String) {
+        val bookmark = addBookmark(noteId, url) ?: return
+        update(noteId) { note ->
+            val holder = org.jsoup.Jsoup.parseBodyFragment("").apply { outputSettings().prettyPrint(false) }.body()
+            com.noted.app.data.html.appendBookmark(bookmark.id, bookmark.url, bookmark.title, holder)
+            note.copy(body = note.body + holder.html())
+        }
+    }
+
     suspend fun addAttachment(
         noteId: String,
         uri: Uri,

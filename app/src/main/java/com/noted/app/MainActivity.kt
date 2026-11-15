@@ -57,6 +57,12 @@ class MainActivity : ComponentActivity() {
         // Abrir desde recientes vuelve a entregar el último intent de compartir:
         // no hay que crear la nota otra vez.
         if (intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY != 0) return
+        // «Ver» en el aviso de compartir: abre la nota recién guardada.
+        intent.getStringExtra(EXTRA_OPEN_NOTE)?.let { noteId ->
+            viewModel.openNote(noteId)
+            intent.removeExtra(EXTRA_OPEN_NOTE)
+            return
+        }
         // Algunas apps mandan el texto con formato (no como String).
         val text = intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString()
 
@@ -88,5 +94,10 @@ class MainActivity : ComponentActivity() {
             else ->
                 intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM).orEmpty()
         }
+    }
+
+    companion object {
+        /** El id de una nota para abrir al llegar (lo manda «Ver» de [ShareActivity]). */
+        const val EXTRA_OPEN_NOTE = "com.noted.app.OPEN_NOTE"
     }
 }

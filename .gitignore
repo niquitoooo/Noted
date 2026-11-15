@@ -22,3 +22,4 @@ captures/
 # Bases reales para el benchmark de escala: no van a git.
 /app/src/test/datos-reales/
 /tools/emoji/fuentes/
+/comparaciones/

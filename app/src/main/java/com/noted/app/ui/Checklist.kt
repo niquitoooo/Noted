@@ -155,8 +155,7 @@ internal object ChecklistOps {
     /**
      * Cambia el texto del ítem [id]. Si [value] trae `\n` (Enter, pegar, un teclado que manda
      * "palabra\n"), parte en ítems: el primero conserva el ítem y los nuevos van sin
-     * marcar, con el formato pendiente de [value], del mismo nivel y debajo (H30,
-     * H31, H34); en un padre con hijos, el nuevo es su primer hijo y los hijos siguen siendo
+     * marcar, con el formato pendiente de [value], del mismo nivel y debajo; en un padre con hijos, el nuevo es su primer hijo y los hijos siguen siendo
      * del padre. Si el ítem estaba marcado, los nuevos van sin anidar al final de los no
      * marcados, o anidados al final del grupo si el marcado es hijo de un padre sin marcar
      *. Las marcas de bloque se descartan. El foco queda en el último, en el cursor.

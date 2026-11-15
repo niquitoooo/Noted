@@ -373,6 +373,14 @@ class NotesViewModel(application: Application) : AndroidViewModel(application) {
 
     fun consumePending() { _pendingNote.value = null }
 
+    /** Abre [noteId] en cuanto la lista esté lista (la manda «Ver» de compartir). */
+    fun openNote(noteId: String) {
+        viewModelScope.launch {
+            repository.awaitLoaded()
+            if (repository.findNote(noteId) != null) _pendingNote.value = noteId
+        }
+    }
+
     fun attachmentFile(attachment: com.noted.app.data.Attachment): File =
         repository.attachmentFile(attachment)
 
