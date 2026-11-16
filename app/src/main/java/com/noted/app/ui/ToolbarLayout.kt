@@ -9,6 +9,8 @@ enum class ToolbarItem(val key: String, val label: String) {
     Bold("bold", "Negrita"),
     Italic("italic", "Cursiva"),
     Strike("strike", "Tachado"),
+    TextColor("text_color", "Color del texto"),
+    Highlight("highlight", "Resaltar"),
     Heading("heading", "Título"),
     Bullet("bullet", "Lista"),
     Ordered("ordered", "Lista numerada"),
@@ -49,7 +51,7 @@ data class ToolbarLayout(val order: List<ToolbarItem>, val hidden: Set<ToolbarIt
     fun hiddenKeys(): String = order.filter { it in hidden }.joinToString(",") { it.key }
 
     companion object {
-        /** De fábrica: todos a la vista; Deshacer y Rehacer primero, después los 14 de siempre. */
+        /** De fábrica: todos a la vista; Deshacer y Rehacer primero, después los demás. */
         val DEFAULT = ToolbarLayout(ToolbarItem.entries.toList(), emptySet())
 
         /**
@@ -58,13 +60,23 @@ data class ToolbarLayout(val order: List<ToolbarItem>, val hidden: Set<ToolbarIt
          */
         fun parse(orderKeys: String?, hiddenKeys: String?): ToolbarLayout {
             val stored = keys(orderKeys).mapNotNull { ToolbarItem.ofKey(it) }.distinct()
-            val order = if (stored.isEmpty()) {
-                DEFAULT.order
-            } else {
-                ToolbarItem.entries.filterNot { it in stored } + stored
-            }
+            val order = if (stored.isEmpty()) DEFAULT.order else withNewItems(stored)
             val hidden = keys(hiddenKeys).mapNotNull { ToolbarItem.ofKey(it) }.toSet()
             return ToolbarLayout(order, hidden)
+        }
+
+        /**
+         * Los botones que no estaban en lo guardado (nuevos de una versión posterior) entran
+         * después del que los precede en el orden de fábrica; si ninguno anterior está, primero.
+         */
+        private fun withNewItems(stored: List<ToolbarItem>): List<ToolbarItem> {
+            val order = stored.toMutableList()
+            for ((index, item) in ToolbarItem.entries.withIndex()) {
+                if (item in order) continue
+                val before = ToolbarItem.entries.subList(0, index).lastOrNull { it in order }
+                order.add(if (before == null) 0 else order.indexOf(before) + 1, item)
+            }
+            return order
         }
 
         private fun keys(text: String?): List<String> =

@@ -10,7 +10,7 @@ class ToolbarLayoutTest {
     fun `sin nada guardado quedan todos los botones a la vista`() {
         val layout = ToolbarLayout.parse(null, null)
         assertEquals(ToolbarLayout.DEFAULT, layout)
-        assertEquals(16, layout.visible.size)
+        assertEquals(18, layout.visible.size)
         assertEquals(listOf(ToolbarItem.Undo, ToolbarItem.Redo, ToolbarItem.Bold), layout.visible.take(3))
         assertEquals(ToolbarItem.Attach, layout.visible.last())
     }
@@ -40,12 +40,26 @@ class ToolbarLayoutTest {
     }
 
     @Test
-    fun `un boton que no estaba guardado aparece primero y las claves raras se ignoran`() {
+    fun `un boton que no estaba guardado entra despues del que lo precede y las claves raras se ignoran`() {
         val layout = ToolbarLayout.parse("bold,italic,viejo,bold", "viejo,italic")
-        assertEquals(ToolbarItem.Undo, layout.order.first())
-        assertEquals(listOf(ToolbarItem.Bold, ToolbarItem.Italic), layout.order.takeLast(2))
-        assertEquals(16, layout.order.size)
+        assertEquals(
+            listOf(
+                ToolbarItem.Undo, ToolbarItem.Redo, ToolbarItem.Bold, ToolbarItem.Italic,
+                ToolbarItem.Strike, ToolbarItem.TextColor, ToolbarItem.Highlight, ToolbarItem.Heading,
+            ),
+            layout.order.take(8),
+        )
+        assertEquals(18, layout.order.size)
         assertEquals(setOf(ToolbarItem.Italic), layout.hidden)
+    }
+
+    @Test
+    fun `color y resaltado entran despues de tachado en una barra ya ordenada`() {
+        val old = ToolbarItem.entries.filterNot { it == ToolbarItem.TextColor || it == ToolbarItem.Highlight }
+        val custom = listOf(ToolbarItem.Strike) + (old - ToolbarItem.Strike)
+        val layout = ToolbarLayout.parse(custom.joinToString(",") { it.key }, "code")
+        assertEquals(listOf(ToolbarItem.Strike, ToolbarItem.TextColor, ToolbarItem.Highlight), layout.order.take(3))
+        assertEquals(setOf(ToolbarItem.Code), layout.hidden)
     }
 
     @Test

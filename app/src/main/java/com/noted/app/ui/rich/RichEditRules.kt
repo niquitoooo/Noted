@@ -498,10 +498,16 @@ object RichEditRules {
         val regionEnd = placeLines(text, lineStart, plan, old.flatten())
         if (splitQuote != null) splitQuoteFrom(text, regionEnd, splitQuote)
         if (typedEnd > typedStart) {
-            formatTyped(
-                text, typedStart, typedEnd, change.formats, pending, pendingColor,
-                linkRange(change, typed, typedStart, typedEnd),
-            )
+            val link = linkRange(change, typed, typedStart, typedEnd)
+            // Lo que el teclado vuelve a escribir igual (recompone la palabra que tenía
+            // subrayada, por ejemplo al volver de un diálogo) no es nuevo: no toma el formato
+            // pendiente.
+            val kept = if (typedStart != start || (pending.isEmpty() && pendingColor == null)) 0
+            else rewrittenPrefix(change.removedText, text, typedStart, typedEnd)
+            if (kept > 0) formatTyped(text, typedStart, typedStart + kept, change.formats, emptyMap(), null, link)
+            if (typedEnd > typedStart + kept) {
+                formatTyped(text, typedStart + kept, typedEnd, change.formats, pending, pendingColor, link)
+            }
         }
         splitAtNewlines(text, lineStart, regionEnd)
         mergeInline(text, lineStart, regionEnd)
@@ -696,6 +702,13 @@ object RichEditRules {
         text.getSpans(from, to, LinkMark::class.java)
             .firstOrNull { text.getSpanStart(it) < from && text.getSpanEnd(it) > to }
             ?.let { text.getSpanEnd(it) }
+
+    /** Cuántos caracteres del principio de lo escrito son los mismos que reemplazó, sin pasar un salto. */
+    private fun rewrittenPrefix(removed: String, text: CharSequence, from: Int, to: Int): Int {
+        var n = 0
+        while (n < removed.length && from + n < to && removed[n] != '\n' && removed[n] == text[from + n]) n++
+        return n
+    }
 
     /**
      * Lo escrito toma el formato de [formats] cambiado por [pending]. En un renglón de

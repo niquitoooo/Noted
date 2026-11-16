@@ -22,11 +22,13 @@ import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.automirrored.filled.Redo
 import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.BorderColor
 import androidx.compose.material.icons.filled.CheckBox
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FormatBold
+import androidx.compose.material.icons.filled.FormatColorText
 import androidx.compose.material.icons.filled.FormatItalic
 import androidx.compose.material.icons.filled.FormatListNumbered
 import androidx.compose.material.icons.filled.FormatQuote
@@ -66,6 +68,8 @@ fun ToolbarItem.icon(): ImageVector = when (this) {
     ToolbarItem.Bold -> Icons.Filled.FormatBold
     ToolbarItem.Italic -> Icons.Filled.FormatItalic
     ToolbarItem.Strike -> Icons.Filled.StrikethroughS
+    ToolbarItem.TextColor -> Icons.Filled.FormatColorText
+    ToolbarItem.Highlight -> Icons.Filled.BorderColor
     ToolbarItem.Heading -> Icons.Filled.Title
     ToolbarItem.Bullet -> Icons.AutoMirrored.Filled.FormatListBulleted
     ToolbarItem.Ordered -> Icons.Filled.FormatListNumbered
@@ -84,6 +88,8 @@ fun ToolbarItem.barFormat(): BarFormat? = when (this) {
     ToolbarItem.Bold -> BarFormat.Bold
     ToolbarItem.Italic -> BarFormat.Italic
     ToolbarItem.Strike -> BarFormat.Strike
+    ToolbarItem.TextColor -> BarFormat.TextColor
+    ToolbarItem.Highlight -> BarFormat.Highlight
     ToolbarItem.Heading -> BarFormat.Heading
     ToolbarItem.Bullet -> BarFormat.Bullet
     ToolbarItem.Ordered -> BarFormat.Ordered

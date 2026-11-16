@@ -11,7 +11,7 @@ enum class LineFormat { Heading2, Bullet, Ordered, Check, Quote }
  * un formato que se saque con otro toque. [Code] es el código en línea; el bloque de código
  * no se marca nunca.
  */
-enum class BarFormat { Bold, Italic, Strike, Heading, Bullet, Ordered, Check, Quote, Code }
+enum class BarFormat { Bold, Italic, Strike, TextColor, Highlight, Heading, Bullet, Ordered, Check, Quote, Code }
 
 /**
  * Los botones de la barra sobre el texto con formato: ponen y sacan marcas
@@ -46,6 +46,24 @@ object RichCommands {
     }
 
     /** Si todos los caracteres de [segments] tienen el formato. */
+    /** Toda la selección con una marca de color ([TextColorMark] o [HighlightMark]). */
+    private fun allMarked(edit: MarkEdit, segments: List<IntRange>, has: (RichMark) -> Boolean): Boolean {
+        val marked = edit.marks.filter { has(it.mark) }
+        return segments.all { segment -> segment.all { i -> marked.any { it.start <= i && i < it.end } } }
+    }
+
+    /** El cursor sobre texto con una marca de color, con la misma regla de bordes que [markedAt]. */
+    private fun colorAt(value: RichText, has: (InlineMark) -> Boolean): Boolean {
+        val text = value.text
+        val pos = value.selection.min
+        val atLineStart = pos == lineStartOf(value.plain, pos)
+        return text.getSpans(pos, pos, InlineMark::class.java).any { mark ->
+            val start = text.getSpanStart(mark)
+            val end = text.getSpanEnd(mark)
+            has(mark) && if (atLineStart) start <= pos && pos < end else start < pos && pos <= end
+        }
+    }
+
     private fun allFormatted(edit: MarkEdit, segments: List<IntRange>, format: InlineFormat): Boolean {
         val formatted = edit.marks.filter { it.mark is InlineMark && it.mark.isFormat(format) }
         return segments.all { segment -> segment.all { i -> formatted.any { it.start <= i && i < it.end } } }
@@ -71,10 +89,17 @@ object RichCommands {
             val lineStart = lineStartOf(value.plain, value.selection.min)
             if (edit.blocksAt(lineStart).any { it.mark is CodeBlockMark }) return emptySet()
             for ((format, button) in inline) if (formatAt(value, format)) result.add(button)
+            val pending = value.pendingColor
+            val textColor = pending?.text != null || (pending?.clearText != true && colorAt(value) { it is TextColorMark })
+            val highlight = pending?.highlight != null || (pending?.clearHighlight != true && colorAt(value) { it is HighlightMark })
+            if (textColor) result.add(BarFormat.TextColor)
+            if (highlight) result.add(BarFormat.Highlight)
         } else {
             val segments = inlineSegments(edit, value.selection)
             if (segments.isNotEmpty()) {
                 for ((format, button) in inline) if (allFormatted(edit, segments, format)) result.add(button)
+                if (allMarked(edit, segments) { it is TextColorMark }) result.add(BarFormat.TextColor)
+                if (allMarked(edit, segments) { it is HighlightMark }) result.add(BarFormat.Highlight)
             }
         }
         val targets = lineTargets(edit, value.selection)

@@ -1301,6 +1301,11 @@ fun NoteEditorScreen(
                     onLink = { openLinkDialog() },
                     onToggle = { insertToggle() },
                     onNote = { createChildNote() },
+                    onColor = { highlight, color ->
+                        transformFocusedText {
+                            if (highlight) RichCommands.setHighlight(it, color) else RichCommands.setTextColor(it, color)
+                        }
+                    },
                     onArrange = { arrangingToolbar = true }
                 )
                 if (arrangingToolbar) {
@@ -2833,9 +2838,22 @@ private fun EditorToolbar(
     onLink: () -> Unit,
     onToggle: () -> Unit,
     onNote: () -> Unit,
+    onColor: (highlight: Boolean, color: String?) -> Unit,
     onArrange: () -> Unit
 ) {
     fun format(action: BarAction) = onFormat(action, barTransform(action))
+    // La grilla abierta: false = color del texto, true = resaltado.
+    var colorGrid by remember { mutableStateOf<Boolean?>(null) }
+    colorGrid?.let { highlight ->
+        ColorGridDialog(
+            highlight = highlight,
+            onPick = { color ->
+                colorGrid = null
+                onColor(highlight, color)
+            },
+            onDismiss = { colorGrid = null }
+        )
+    }
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = MaterialTheme.colorScheme.surfaceContainer,
@@ -2865,6 +2883,8 @@ private fun EditorToolbar(
                             ToolbarItem.Bold -> format(BarAction.Bold)
                             ToolbarItem.Italic -> format(BarAction.Italic)
                             ToolbarItem.Strike -> format(BarAction.Strike)
+                            ToolbarItem.TextColor -> colorGrid = false
+                            ToolbarItem.Highlight -> colorGrid = true
                             ToolbarItem.Heading -> format(BarAction.Heading)
                             ToolbarItem.Bullet -> format(BarAction.Bullet)
                             ToolbarItem.Ordered -> format(BarAction.Ordered)

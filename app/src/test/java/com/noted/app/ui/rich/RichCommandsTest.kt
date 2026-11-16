@@ -294,6 +294,27 @@ class RichCommandsTest {
     }
 
     @Test
+    fun colorButtonsAreActiveOverColoredText() {
+        val html = "<div>a<span class=\"noted-text-red\">bc</span>d<span class=\"noted-highlight\">ef</span></div>"
+        val inRed = RichCommands.activeFormats(rich(html, 2))
+        assertTrue(BarFormat.TextColor in inRed)
+        assertFalse(BarFormat.Highlight in inRed)
+        assertTrue(BarFormat.Highlight in RichCommands.activeFormats(rich(html, 5)))
+        assertFalse(BarFormat.TextColor in RichCommands.activeFormats(rich(html, 4)))
+        assertTrue(BarFormat.TextColor in RichCommands.activeFormats(rich(html, 1, 3)))
+        assertFalse(BarFormat.TextColor in RichCommands.activeFormats(rich(html, 0, 3)))
+    }
+
+    @Test
+    fun colorButtonsFollowThePendingColor() {
+        val pending = RichCommands.setTextColor(rich("<div>ab</div>", 2), "blue")
+        assertTrue(BarFormat.TextColor in RichCommands.activeFormats(pending))
+        val html = "<div><span class=\"noted-highlight-red\">ab</span></div>"
+        val cut = RichCommands.setHighlight(rich(html, 2), null)
+        assertFalse(BarFormat.Highlight in RichCommands.activeFormats(cut))
+    }
+
+    @Test
     fun setHighlightGreenHasNoSuffix() {
         // El verde es `noted-highlight` sin sufijo.
         val green = RichCommands.setHighlight(rich("<div>abc</div>", 0, 3), "green")
@@ -314,6 +335,18 @@ class RichCommandsTest {
         val change = RichEditRules.before(text, at, 0, typed.length)
         text.replace(at, at, typed)
         return text to RichEditRules.after(text, change, value.pending, value.pendingColor)
+    }
+
+    @Test
+    fun recomposedWordKeepsItsFormatAndOnlyTheNewTextTakesThePendingColor() {
+        // El teclado vuelve a escribir la palabra que componía ("ab" por "ab x") después de
+        // elegir el color: "ab" no cambia, solo " x" sale en rojo.
+        val value = RichCommands.setTextColor(rich("<div>ab</div>", 2), "red")
+        val text = SpannableStringBuilder(value.text)
+        val change = RichEditRules.before(text, 0, 2, 4)
+        text.replace(0, 2, "ab x")
+        RichEditRules.after(text, change, value.pending, value.pendingColor)
+        assertEquals("p|ab{color=red} x{/color}", RichDebug.describe(text))
     }
 
     @Test
