@@ -3,7 +3,10 @@
 App de notas para Android, local-first y open source. Sin cuenta ni servidor: todo
 queda en el aparato.
 
-<p align="center"><img src="media/flyer.png" alt="Noted: tus notas, en tu teléfono" width="540"></p>
+<p align="center">
+  <img src="media/flyer.png" alt="Noted: tus notas, en tu teléfono" width="420">
+  <img src="media/flyer-combinado.png" alt="Noted: anotá todo, sin cuentas, sin nube" width="420">
+</p>
 
 ## Qué hace
 
