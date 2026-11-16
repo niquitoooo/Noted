@@ -3,6 +3,8 @@
 App de notas para Android, local-first y open source. Sin cuenta ni servidor: todo
 queda en el aparato.
 
+<p align="center"><img src="media/flyer.png" alt="Noted: tus notas, en tu teléfono" width="540"></p>
+
 ## Qué hace
 
 - **Edición en vivo**: negrita, cursiva, subrayado, tachado, títulos, citas, listas,
