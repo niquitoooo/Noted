@@ -3,12 +3,7 @@
 App de notas para Android, local-first y open source. Sin cuenta ni servidor: todo
 queda en el aparato.
 
-<table align="center">
-  <tr>
-    <td><img src="media/flyer-combinado.png" alt="Noted: anotá todo, sin cuentas, sin nube" width="380"></td>
-    <td><img src="media/flyer.png" alt="Noted: tus notas, en tu teléfono" width="380"></td>
-  </tr>
-</table>
+<p align="center"><img src="media/banner.png" alt="Noted: anotá todo, sin cuentas, sin nube" width="840"></p>
 
 ## Qué hace
 
@@ -35,6 +30,21 @@ queda en el aparato.
 - **Compartir a Noted** desde cualquier app (fotos, videos, PDFs, texto).
 - **Material You 3** con color dinámico en Android 12+; en tablets el contenido se
   centra con un ancho máximo legible.
+
+## Capturas
+
+<table align="center">
+  <tr>
+    <td><img src="media/tienda/01-portada.png" alt="Anotá todo. Sin cuentas, sin nube." width="260"></td>
+    <td><img src="media/tienda/02-cuadernos.png" alt="Cada tema en su cuaderno" width="260"></td>
+    <td><img src="media/tienda/03-checklists.png" alt="Lo que marcás baja solo" width="260"></td>
+  </tr>
+  <tr>
+    <td><img src="media/tienda/04-formato.png" alt="Resaltá lo importante" width="260"></td>
+    <td><img src="media/tienda/05-adjuntos.png" alt="Todo adentro de la nota: fotos, videos, PDFs, notas de voz, archivos y links" width="260"></td>
+    <td><img src="media/tienda/06-tus-datos.png" alt="Tus notas son tuyas" width="260"></td>
+  </tr>
+</table>
 
 ## Instalar
 
