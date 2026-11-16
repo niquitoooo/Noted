@@ -21,13 +21,20 @@ queda en el aparato.
 - **Portada e ícono por nota** (emoji o imagen), con encuadre ajustable.
 - **Cuadernos**, notas fijadas, orden manual y papelera (también de cuadernos).
 - **Búsqueda** en título, texto y enlaces, hecha en la base, sin cargar todo en memoria.
-- **Barra del editor configurable**: 14 botones que se ordenan, ocultan y muestran.
+- **Barra del editor configurable**: 18 botones que se ordenan, ocultan y muestran.
 - **Deshacer y rehacer** de toda la nota, e historial de versiones del cuerpo.
 - **Teclado físico**: atajos con Ctrl, flechas entre bloques y selección con Shift.
 - **Importar y exportar en Markdown**, con los adjuntos en una carpeta aparte.
 - **Compartir a Noted** desde cualquier app (fotos, videos, PDFs, texto).
 - **Material You 3** con color dinámico en Android 12+; en tablets el contenido se
   centra con un ancho máximo legible.
+
+## Instalar
+
+Bajá la APK de la última versión en
+[Releases](https://github.com/niquitoooo/Noted/releases/latest) y abrila en el
+teléfono (Android 8 o superior). Android te va a pedir permiso para instalar apps
+de esa fuente.
 
 ## Dónde se guarda
 
