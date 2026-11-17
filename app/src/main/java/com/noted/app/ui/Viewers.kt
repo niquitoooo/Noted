@@ -9,6 +9,9 @@ import android.view.LayoutInflater
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -40,6 +43,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -100,6 +104,7 @@ import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import com.noted.app.R
 import com.noted.app.data.Attachment
+import com.noted.app.util.copyFileTo
 import com.noted.app.util.humanSize
 import com.noted.app.util.mimeIcon
 import com.noted.app.util.openExternally
@@ -586,6 +591,23 @@ private fun ViewerScaffold(
     content: @Composable (PaddingValues) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val currentFile by rememberUpdatedState(file)
+    // «Guardar como» de Android: el usuario elige carpeta y nombre; no pide permisos.
+    val saveAs = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(attachment.mime.ifBlank { "application/octet-stream" })
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        val source = currentFile
+        scope.launch {
+            val ok = withContext(Dispatchers.IO) { copyFileTo(context, source, uri) }
+            Toast.makeText(
+                context,
+                if (ok) "Guardado" else "No se pudo guardar el archivo",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
     Scaffold(
         containerColor = if (darkContent) Color.Black else MaterialTheme.colorScheme.background,
         topBar = {
@@ -621,6 +643,9 @@ private fun ViewerScaffold(
                 actions = {
                     IconButton(onClick = { openExternally(context, file, attachment.mime) }) {
                         Icon(Icons.Filled.OpenInNew, contentDescription = "Abrir con otra app")
+                    }
+                    IconButton(onClick = { saveAs.launch(attachment.name) }) {
+                        Icon(Icons.Filled.Download, contentDescription = "Guardar")
                     }
                     IconButton(onClick = { shareFile(context, file, attachment.mime) }) {
                         Icon(Icons.Filled.Share, contentDescription = "Compartir")

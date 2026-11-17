@@ -111,6 +111,13 @@ fun shareFile(context: Context, file: File, mime: String) {
     }
 }
 
+/** Copia el adjunto al documento que el usuario eligió en «Guardar como». */
+fun copyFileTo(context: Context, file: File, target: android.net.Uri): Boolean = runCatching {
+    context.contentResolver.openOutputStream(target, "w")!!.use { out ->
+        file.inputStream().use { it.copyTo(out) }
+    }
+}.isSuccess
+
 fun shareText(context: Context, text: String, subject: String) {
     val intent = Intent(Intent.ACTION_SEND).setType("text/plain")
         .putExtra(Intent.EXTRA_SUBJECT, subject)
