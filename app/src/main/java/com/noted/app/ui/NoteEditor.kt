@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -64,6 +65,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.NoteAdd
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.CheckBox
+import androidx.compose.material.icons.filled.CheckBoxOutlineBlank
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.ContentPaste
@@ -1028,6 +1030,8 @@ fun NoteEditorScreen(
     var headerBottom by remember { mutableFloatStateOf(0f) }
     var draggingKey by remember { mutableStateOf<String?>(null) }
     var dragMoved by remember { mutableStateOf(false) }
+    /** El bloque se levantó con «Mover» de su menú: flota hasta que se lo arrastra y se suelta. */
+    var lifted by remember { mutableStateOf(false) }
     var pendingDrop by remember { mutableStateOf<PendingDrop?>(null) }
     val dragActive = remember { booleanArrayOf(false) }
     var dragOffsetY by remember { mutableFloatStateOf(0f) }
@@ -1109,7 +1113,39 @@ fun NoteEditorScreen(
         saveNow()
     }
 
+    /** Un paso del dedo mientras se lleva un bloque, agarrado de él o levantado con «Mover». */
+    fun dragBlockBy(dy: Float) {
+        dragOffsetY += dy
+        if (dy != 0f) dragDirection = dy
+        fingerY = dragStartTop + dragStartGrab + dragOffsetY
+        if (abs(dragOffsetY) >= autoScrollThreshold) dragMoved = true
+        updateBlockDragTarget()
+    }
+
+    /**
+     * «Mover» del menú de un desplegable o una checklist: el bloque queda flotando en su
+     * lugar, con la línea que marca dónde cae, hasta que se lo arrastra y se suelta.
+     */
+    fun liftBlock(key: String) {
+        val bounds = blockBounds[key] ?: return
+        focusManager.clearFocus()
+        dragActive[0] = true
+        dragStartTop = bounds.top
+        dragStartHeight = bounds.height
+        // La copia mide como mucho 240 dp: se la agarra de arriba, donde empieza el bloque.
+        dragStartGrab = 0f
+        dragOffsetY = 0f
+        dragDirection = 0f
+        fingerY = dragStartTop
+        dragMoved = false
+        pendingDrop = null
+        draggingKey = key
+        lifted = true
+        updateBlockDragTarget()
+    }
+
     fun finishBlockDrag(commit: Boolean) {
+        lifted = false
         dragActive[0] = false
         val key = draggingKey
         val pending = pendingDrop
@@ -1546,15 +1582,7 @@ fun NoteEditorScreen(
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
-                                        dragOffsetY += dragAmount.y
-                                        if (dragAmount.y != 0f) {
-                                            dragDirection = dragAmount.y
-                                        }
-                                        fingerY = dragStartTop + dragStartGrab + dragOffsetY
-                                        if (abs(dragOffsetY) >= autoScrollThreshold) {
-                                            dragMoved = true
-                                        }
-                                        updateBlockDragTarget()
+                                        dragBlockBy(dragAmount.y)
                                     },
                                     onDragEnd = { finishBlockDrag(commit = true) },
                                     onDragCancel = { finishBlockDrag(commit = false) }
@@ -1705,6 +1733,7 @@ fun NoteEditorScreen(
                                                 }
                                             },
                                             onRemove = { removeToggle(block) },
+                                            onMove = { liftBlock(block.key) },
                                             onShortcut = ::editorShortcut,
                                             onTitleUp = { focusSiblingText(block.key, -1, 0f) },
                                             onTitleDown = { focusSiblingText(block.key, 1, 0f) },
@@ -1768,7 +1797,8 @@ fun NoteEditorScreen(
                                                 focusSiblingText(block.key, direction, x)
                                             }
                                         },
-                                        onGeometry = { itemId, geometry -> textGeometry[itemId] = geometry }
+                                        onGeometry = { itemId, geometry -> textGeometry[itemId] = geometry },
+                                        onMove = { liftBlock(block.key) },
                                     )
                                 }
                             }
@@ -1813,6 +1843,16 @@ fun NoteEditorScreen(
                     }
 
                     val draggingBlock = blocks.firstOrNull { it.key == draggingKey }
+                    if (lifted) {
+                        // Levantado con «Mover»: tocar fuera de la copia lo deja donde estaba.
+                        Box(
+                            Modifier
+                                .matchParentSize()
+                                .pointerInput(Unit) {
+                                    detectTapGestures { finishBlockDrag(commit = false) }
+                                }
+                        )
+                    }
                     if (draggingBlock != null && draggingBlock.isMovable()) {
                         Box(
                             Modifier
@@ -1828,6 +1868,22 @@ fun NoteEditorScreen(
                                 .clip(RoundedCornerShape(14.dp))
                                 .alpha(0.8f)
                                 .onSizeChanged { overlayHeight = it.height }
+                                .then(
+                                    if (lifted) {
+                                        Modifier.pointerInput(draggingBlock.key) {
+                                            detectDragGestures(
+                                                onDrag = { change, dragAmount ->
+                                                    change.consume()
+                                                    dragBlockBy(dragAmount.y)
+                                                },
+                                                onDragEnd = { finishBlockDrag(commit = true) },
+                                                onDragCancel = { finishBlockDrag(commit = false) }
+                                            )
+                                        }
+                                    } else {
+                                        Modifier
+                                    }
+                                )
                         ) {
                             when (draggingBlock) {
                                 is EditorBlock.Media -> attachmentsById[draggingBlock.attachmentId]
@@ -1861,6 +1917,8 @@ fun NoteEditorScreen(
                                     )
                                 }
 
+                                is EditorBlock.Toggle -> TogglePreview(draggingBlock)
+                                is EditorBlock.Checklist -> ChecklistPreview(draggingBlock)
                                 else -> Unit
                             }
                         }
@@ -2131,6 +2189,7 @@ private fun ToggleBlock(
     onFocusRequestConsumed: () -> Unit,
     onTitleFocusChanged: (Boolean) -> Unit,
     onRemove: () -> Unit,
+    onMove: () -> Unit,
     onShortcut: (EditorShortcut) -> Boolean,
     childContent: @Composable (EditorBlock) -> Unit
 ) {
@@ -2240,6 +2299,13 @@ private fun ToggleBlock(
                     }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(
+                            text = { Text("Mover") },
+                            onClick = {
+                                menu = false
+                                onMove()
+                            }
+                        )
+                        DropdownMenuItem(
                             text = { Text("Quitar desplegable") },
                             onClick = {
                                 menu = false
@@ -2261,6 +2327,75 @@ private fun ToggleBlock(
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+/** La copia que flota mientras se mueve un desplegable: su cabecera. */
+@Composable
+private fun TogglePreview(toggle: EditorBlock.Toggle) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp).heightIn(min = 60.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = if (toggle.isToggled) Icons.Filled.ExpandMore else Icons.Filled.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = toggle.title.ifEmpty { "Desplegable" },
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+/** La copia que flota mientras se mueve una checklist: sus primeros ítems. */
+@Composable
+private fun ChecklistPreview(checklist: EditorBlock.Checklist) {
+    val shown = checklist.items.take(4)
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surfaceContainer,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+            shown.forEach { item ->
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.heightIn(min = 36.dp)) {
+                    Icon(
+                        imageVector = if (item.checked) Icons.Filled.CheckBox else Icons.Filled.CheckBoxOutlineBlank,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        text = item.value.plain.ifEmpty { " " },
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            if (checklist.items.size > shown.size) {
+                Text(
+                    text = "y ${checklist.items.size - shown.size} más",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = 30.dp, top = 2.dp)
+                )
             }
         }
     }

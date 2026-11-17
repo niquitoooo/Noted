@@ -138,10 +138,15 @@ internal class DragDropController(
     ): PendingDrop? {
         val from = blocks.indexOfFirst { it.key == fromKey }
         if (from < 0) return null
+        // Lo que se mueve: el bloque y, si es un desplegable, todo lo que tiene adentro.
+        // Nada de eso puede ser el destino.
+        val movingEnd = subtreeEnd(from)
+        val moving = blocks.subList(from, movingEnd).mapTo(HashSet()) { it.key }
+        val movingCount = movingEnd - from
 
         val textTarget = blocks.withIndex().firstOrNull { (_, block) ->
             block is EditorBlock.Text &&
-                block.key != fromKey &&
+                block.key !in moving &&
                 tree.isVisible(block) &&
                 blockBounds[block.key]?.let { fingerY in it.top..it.bottom } == true
         }
@@ -166,35 +171,19 @@ internal class DragDropController(
             }
         }
 
-        fun isDescendantOf(block: EditorBlock, ancestorKey: String): Boolean {
-            var parentKey = block.parentKey
-            while (parentKey != null) {
-                if (parentKey == ancestorKey) return true
-                parentKey = blocks.firstOrNull { it.key == parentKey }?.parentKey
-            }
-            return false
-        }
-
-        fun subtreeEnd(index: Int): Int {
-            val block = blocks.getOrNull(index) ?: return index
-            if (block !is EditorBlock.Toggle) return index + 1
-            var end = index + 1
-            while (end < blocks.size && isDescendantOf(blocks[end], block.key)) end++
-            return end
-        }
-
         // Un desplegable cerrado no recibe bloques: se suelta antes o después de él,
         // como cualquier otro bloque. Si no, el bloque quedaría escondido adentro.
         val targetToggle = blocks.filterIsInstance<EditorBlock.Toggle>()
             .lastOrNull { toggle ->
                 toggle.isToggled &&
+                    toggle.key !in moving &&
                     tree.isVisible(toggle) &&
                     blockBounds[toggle.key]?.let { fingerY in it.top..it.bottom } == true
             }
         val targetParent = targetToggle?.key
 
         val siblings = blocks.withIndex().filter { (_, block) ->
-            block.key != fromKey &&
+            block.key !in moving &&
                 block.parentKey == targetParent &&
                 tree.isVisible(block) &&
                 blockBounds.containsKey(block.key)
@@ -203,7 +192,7 @@ internal class DragDropController(
         if (siblings.isEmpty()) {
             if (targetParent == null) return null
             val allChildren = blocks.withIndex().filter { (_, block) ->
-                block.key != fromKey && block.parentKey == targetParent
+                block.key !in moving && block.parentKey == targetParent
             }
             val toggleIndex = blocks.indexOfFirst { it.key == targetParent }
             val rawTarget = if (allChildren.isEmpty()) {
@@ -211,7 +200,7 @@ internal class DragDropController(
             } else {
                 subtreeEnd(allChildren.last().index)
             }
-            val targetIndex = if (from < rawTarget) rawTarget - 1 else rawTarget
+            val targetIndex = if (from < rawTarget) rawTarget - movingCount else rawTarget
             val lineTop = blockBounds[targetParent]?.bottom
             return lineTop?.let { PendingDrop.Block(targetIndex, targetParent, it) }
         }
@@ -225,7 +214,7 @@ internal class DragDropController(
         } else {
             subtreeEnd(siblings.last().index)
         }
-        val targetIndex = if (from < rawTarget) rawTarget - 1 else rawTarget
+        val targetIndex = if (from < rawTarget) rawTarget - movingCount else rawTarget
         val lineTop = if (before != null) {
             blockBounds[before.value.key]?.top
         } else {
@@ -234,14 +223,39 @@ internal class DragDropController(
         return lineTop?.let { PendingDrop.Block(targetIndex, targetParent, it) }
     }
 
-    /**
-     * Saca el bloque y une el texto que tenía arriba con el de abajo, como si
-     * nunca hubiera estado ahí; si no, quedaría un hueco hasta reabrir la nota.
-     */
-    private fun removeAndMerge(index: Int): BlockCommands.MergedText? {
-        blocks.removeAt(index)
-        return BlockCommands.mergeTextAround(blocks, index)
+    private fun isDescendantOf(block: EditorBlock, ancestorKey: String): Boolean {
+        var parentKey = block.parentKey
+        while (parentKey != null) {
+            if (parentKey == ancestorKey) return true
+            parentKey = blocks.firstOrNull { it.key == parentKey }?.parentKey
+        }
+        return false
     }
+
+    /** Dónde termina el bloque de [index] con lo que tiene adentro (un desplegable, sus hijos). */
+    private fun subtreeEnd(index: Int): Int {
+        val block = blocks.getOrNull(index) ?: return index
+        if (block !is EditorBlock.Toggle) return index + 1
+        var end = index + 1
+        while (end < blocks.size && isDescendantOf(blocks[end], block.key)) end++
+        return end
+    }
+
+    /**
+     * Saca el bloque de [index] con lo que tiene adentro y une el texto que tenía arriba
+     * con el de abajo, como si nunca hubiera estado ahí; si no, quedaría un hueco hasta
+     * reabrir la nota. Devuelve lo que sacó, el bloque primero.
+     */
+    private fun removeAndMerge(index: Int): Pair<List<EditorBlock>, BlockCommands.MergedText?> {
+        val end = subtreeEnd(index)
+        val removed = blocks.subList(index, end).toList()
+        repeat(end - index) { blocks.removeAt(index) }
+        return removed to BlockCommands.mergeTextAround(blocks, index)
+    }
+
+    /** El bloque en su lugar nuevo, colgando de [parentKey]; lo de adentro sigue colgando de él. */
+    private fun List<EditorBlock>.reparented(parentKey: String?): List<EditorBlock> =
+        listOf(first().withParent(parentKey)) + drop(1)
 
     /** Suelta el bloque en el texto; dos checklists que quedan pegadas se juntan. */
     fun dropText(mediaKey: String, pending: PendingDrop.Text): String? =
@@ -253,13 +267,13 @@ internal class DragDropController(
         if (blocks.none { it.key == pending.textKey && it is EditorBlock.Text }) return null
 
         // Si el destino era el texto de abajo, ahora vive dentro del de arriba.
-        val merged = removeAndMerge(mediaIndex)
+        val (moved, merged) = removeAndMerge(mediaIndex)
         val movedInto = merged?.takeIf { it.removedKey == pending.textKey }
         val textKey = movedInto?.intoKey ?: pending.textKey
         val textIndex = blocks.indexOfFirst { it.key == textKey }
         val text = blocks.getOrNull(textIndex) as? EditorBlock.Text
         if (text == null) {
-            blocks.add(media)
+            blocks.addAll(moved)
             return null
         }
 
@@ -272,8 +286,8 @@ internal class DragDropController(
 
         blocks[textIndex] = text.copy(value = before.dropTrailingNewline())
         var insertAt = textIndex + 1
-        blocks.add(insertAt, media.withParent(text.parentKey))
-        insertAt++
+        blocks.addAll(insertAt, moved.reparented(text.parentKey))
+        insertAt += moved.size
         if (after.plain.isNotEmpty()) {
             val afterKey = newKey()
             blocks.add(insertAt, EditorBlock.Text(afterKey, after, text.parentKey))
@@ -288,20 +302,19 @@ internal class DragDropController(
         val media = blocks[from].takeIf { it.isMovable() } ?: return
         // targetIndex ya descuenta el bloque sacado: igual a from es el mismo lugar.
         if (targetIndex == from && media.parentKey == targetParentKey) return
-        val merged = removeAndMerge(from)
+        val (moved, merged) = removeAndMerge(from)
         // Al unir los textos desaparece un bloque más en la posición from.
         val target = if (merged != null && targetIndex > from) targetIndex - 1 else targetIndex
-        blocks.add(
-            target.coerceIn(0, blocks.size),
-            media.withParent(targetParentKey)
-        )
+        blocks.addAll(target.coerceIn(0, blocks.size), moved.reparented(targetParentKey))
         BlockCommands.normalizeChecklists(blocks, null)
     }
 }
 
-/** Bloques que se pueden arrastrar a otro lugar: adjuntos, enlaces y notas. */
-internal fun EditorBlock.isMovable(): Boolean =
-    this is EditorBlock.Media || this is EditorBlock.Bookmark || this is EditorBlock.NoteLink
+/**
+ * Bloques que se pueden llevar a otro lugar: adjuntos, enlaces y notas (manteniéndolos
+ * apretados), desplegables y checklists (con «Mover» de su menú).
+ */
+internal fun EditorBlock.isMovable(): Boolean = this !is EditorBlock.Text
 
 internal fun EditorBlock.withParent(parentKey: String?): EditorBlock = when (this) {
     is EditorBlock.Text -> copy(parentKey = parentKey)

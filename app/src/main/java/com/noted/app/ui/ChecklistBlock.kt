@@ -65,6 +65,11 @@ import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Icon
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -239,6 +244,7 @@ internal fun ChecklistBlock(
     viewport: () -> Pair<Float, Float>,
     scrollBy: suspend (Float) -> Float,
     onShortcut: (EditorShortcut) -> Boolean,
+    onMove: () -> Unit,
 ) {
     val style = rememberRichStyle()
     val density = LocalDensity.current
@@ -472,7 +478,10 @@ internal fun ChecklistBlock(
                                 }
                             }
 
-                            ChecklistLine.Add -> AddRow { currentOnItemsChange(ChecklistOps.addAtEnd(currentItems), null, ItemChange.Edit) }
+                            ChecklistLine.Add -> AddRow(
+                                onAdd = { currentOnItemsChange(ChecklistOps.addAtEnd(currentItems), null, ItemChange.Edit) },
+                                onMove = onMove,
+                            )
                             is ChecklistLine.Header -> HeaderRow(line.count, collapsed) { onCollapsedChange(!collapsed) }
                         }
                     }
@@ -717,15 +726,45 @@ private fun GhostRow(parent: ChecklistItem) {
 
 /** "+ Elemento de la lista": "+" en la columna de la casilla, texto desde 94 + 6 dp. */
 @Composable
-private fun AddRow(onAdd: () -> Unit) {
+private fun AddRow(onAdd: () -> Unit, onMove: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    var menu by remember { mutableStateOf(false) }
     Box(
         Modifier
             .fillMaxWidth()
             .heightIn(min = CHECKLIST_ROW)
-            .clickable(onClick = onAdd)
-            .semantics { contentDescription = CHECKLIST_ADD_DESCRIPTION }
     ) {
+        Box(
+            Modifier
+                .matchParentSize()
+                .clickable(onClick = onAdd)
+                .semantics { contentDescription = CHECKLIST_ADD_DESCRIPTION }
+        )
+        // El menú de la lista entera, como el de las fotos y los videos.
+        Box(Modifier.align(Alignment.CenterEnd)) {
+            IconButton(
+                onClick = { menu = true },
+                modifier = Modifier
+                    .size(34.dp)
+                    .focusProperties { canFocus = false }
+            ) {
+                Icon(
+                    Icons.Filled.MoreVert,
+                    contentDescription = "Opciones de la lista",
+                    tint = colors.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+            DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                DropdownMenuItem(
+                    text = { Text("Mover") },
+                    onClick = {
+                        menu = false
+                        onMove()
+                    }
+                )
+            }
+        }
         Icon(
             Icons.Filled.Add,
             contentDescription = null,

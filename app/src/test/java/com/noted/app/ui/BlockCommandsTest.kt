@@ -281,4 +281,49 @@ class BlockCommandsTest {
         )
         assertEquals(blocks[2].key, inside)
     }
+
+    @Test
+    fun dropBlockMovesToggleWithWhatIsInside() {
+        val blocks = mutableListOf<EditorBlock>(
+            EditorBlock.Toggle("tg", "Desplegable"),
+            text("in", "<div>adentro</div>").copy(parentKey = "tg"),
+            EditorBlock.Media("media-p1", "p1", parentKey = "tg"),
+            EditorBlock.Media("media-p2", "p2"),
+            text("end", "<div>fin</div>"),
+        )
+        DragDropController(blocks, BlockTree(blocks)).dropBlock("tg", targetIndex = 1, targetParentKey = null)
+        assertEquals(listOf("media-p2", "tg", "in", "media-p1", "end"), blocks.map { it.key })
+        assertEquals(listOf(null, null, "tg", "tg", null), blocks.map { it.parentKey })
+    }
+
+    @Test
+    fun toggleTargetSkipsItsOwnInside() {
+        val blocks = mutableListOf<EditorBlock>(
+            EditorBlock.Toggle("tg", "Desplegable"),
+            text("in", "<div>adentro</div>").copy(parentKey = "tg"),
+            EditorBlock.Media("media-p2", "p2"),
+            text("end", "<div>fin</div>"),
+        )
+        val bounds = mapOf(
+            "tg" to androidx.compose.ui.geometry.Rect(0f, 0f, 100f, 300f),
+            "in" to androidx.compose.ui.geometry.Rect(0f, 100f, 100f, 200f),
+            "media-p2" to androidx.compose.ui.geometry.Rect(0f, 300f, 100f, 400f),
+            "end" to androidx.compose.ui.geometry.Rect(0f, 400f, 100f, 500f),
+        )
+        val controller = DragDropController(blocks, BlockTree(blocks))
+        // Arriba de su propio contenido no hay destino adentro: cae antes que el resto.
+        assertEquals(PendingDrop.Block(0, null, 300f), controller.update("tg", 150f, bounds, emptyMap()))
+        // Debajo de la foto: el índice ya descuenta el desplegable y lo que tiene adentro.
+        val drop = controller.update("tg", 390f, bounds, emptyMap()) as PendingDrop.Block
+        assertEquals(PendingDrop.Block(1, null, 400f), drop)
+        controller.dropBlock("tg", drop.targetIndex, drop.parentKey)
+        assertEquals(listOf("media-p2", "tg", "in", "end"), blocks.map { it.key })
+    }
+
+    @Test
+    fun dropTextPutsChecklistBetweenLines() {
+        val blocks = mutableListOf<EditorBlock>(checklist("c", "A"), text("t", "<div>a</div><div>b</div>"))
+        DragDropController(blocks, BlockTree(blocks)).dropText("c", PendingDrop.Text("t", offset = 2, lineTop = 0f))
+        assertEquals(listOf("text:p|a", "checklist:A", "text:p|b"), blockShape(blocks))
+    }
 }
