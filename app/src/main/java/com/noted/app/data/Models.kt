@@ -81,11 +81,8 @@ data class Note(
 ) {
     val displayTitle: String get() = title.ifBlank { "Sin título" }
 
-    /** Lo que busca la lista: el título, el texto y las direcciones de los enlaces. */
-    fun matchesSearch(query: String): Boolean =
-        title.contains(query, ignoreCase = true) ||
-            plainText.contains(query, ignoreCase = true) ||
-            linkText.contains(query, ignoreCase = true)
+    /** Lo que busca la lista: solo el título. */
+    fun matchesSearch(query: String): Boolean = title.contains(query, ignoreCase = true)
 }
 
 /**

@@ -189,7 +189,7 @@ class NoteHtmlTest {
     }
 
     @Test
-    fun searchFindsLinkAddresses() {
+    fun searchIgnoresTextAndLinkAddresses() {
         val bookmark = Bookmark(id = "b1", url = "https://github.com/example", title = "Repo")
         val markdown = listOf(
             "Mirá [esto](https://docs.example.org/guia) un rato",
@@ -205,8 +205,10 @@ class NoteHtmlTest {
         // Antes, con el cuerpo en Markdown, la dirección estaba en el texto que se buscaba.
         assertTrue(searchableText(markdown).contains("github.com"))
         assertEquals("https://docs.example.org/guia\nhttps://github.com/example", note.linkText)
-        assertTrue(note.matchesSearch("github.com"))
-        assertTrue(note.matchesSearch("DOCS.EXAMPLE"))
+        // La búsqueda mira solo el título: ni el texto ni los enlaces.
+        assertFalse(note.matchesSearch("github.com"))
+        assertFalse(note.matchesSearch("DOCS.EXAMPLE"))
+        assertFalse(note.matchesSearch("Mirá"))
         assertFalse(note.matchesSearch("noted://"))
         assertFalse(note.matchesSearch("openNote"))
         // El resumen y el texto siguen sin las direcciones.

@@ -269,7 +269,8 @@ class NotesRepositoryRoomTest {
         runBlocking { repo.flushAndWait() }
 
         assertEquals(setOf(note.id), runBlocking { repo.searchIds("ÑOQUI") })
-        assertEquals(setOf(note.id), runBlocking { repo.searchIds("papa") })
+        // El texto no se busca: solo el título.
+        assertEquals(emptySet<String>(), runBlocking { repo.searchIds("papa") })
         assertEquals(emptySet<String>(), runBlocking { repo.searchIds("batata") })
     }
 

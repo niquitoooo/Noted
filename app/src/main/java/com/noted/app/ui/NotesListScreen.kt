@@ -276,9 +276,11 @@ fun NotesListScreen(
     val visibleNotes = remember(notes, filter, query, nestedIds, searchScope, foundIds, trashedNotebooks, hiddenIds) {
         if (query.isNotBlank()) {
             // Al buscar manda el lugar elegido en la lupa (en la papelera, solo la papelera).
-            // Lo que se fue con un cuaderno a la papelera no se busca.
+            // Lo que se fue con un cuaderno a la papelera no se busca, ni las notas que están
+            // dentro de otra.
             return@remember notes.filter { note ->
                 note.id !in hiddenIds &&
+                    note.id !in nestedIds &&
                     inSearchScope(note, filter, searchScope) &&
                     (filter != NoteFilter.Trash || note.trashedWith !in trashedIds) &&
                     (if (foundIds != null) note.id in foundIds else note.matchesSearch(query))

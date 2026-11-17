@@ -33,24 +33,25 @@ class SearchIndexTest {
         dao.save(notes.map { it.toEntity() }, emptyList(), emptyList(), 50)
 
     @Test
-    fun insertedNoteIsFound() = runTest {
+    fun insertedNoteIsFoundByItsTitleOnly() = runTest {
         save(
             Note(id = "a", title = "Compras", plainText = "Leche y pan"),
-            Note(id = "b", title = "Viaje", linkText = "https://ejemplo.com/Ñandú")
+            Note(id = "b", title = "Viaje al Ñandú", linkText = "https://ejemplo.com/guia")
         )
         assertEquals(setOf("a"), search("compr"))
-        assertEquals(setOf("a"), search("LECHE"))
-        assertEquals(setOf("b"), search("ñandú"))
-        assertEquals(setOf("b"), search("EJEMPLO.COM"))
+        assertEquals(setOf("b"), search("ÑANDÚ"))
+        // Ni el texto ni los enlaces se buscan.
+        assertEquals(emptySet<String>(), search("LECHE"))
+        assertEquals(emptySet<String>(), search("EJEMPLO.COM"))
         assertEquals(emptySet<String>(), search("nada de esto"))
     }
 
     @Test
-    fun updatedNoteIsFoundByTheNewTextOnly() = runTest {
-        save(Note(id = "a", title = "Uno", plainText = "texto viejo"))
+    fun updatedNoteIsFoundByTheNewTitleOnly() = runTest {
+        save(Note(id = "a", title = "Título viejo", plainText = "texto"))
         assertEquals(setOf("a"), search("viejo"))
 
-        save(Note(id = "a", title = "Uno", plainText = "texto nuevo"))
+        save(Note(id = "a", title = "Título nuevo", plainText = "texto viejo"))
         assertEquals(emptySet<String>(), search("viejo"))
         assertEquals(setOf("a"), search("nuevo"))
     }

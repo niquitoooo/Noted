@@ -11,8 +11,11 @@ interface NotesDao {
     @Query("SELECT * FROM note")
     suspend fun all(): List<NoteEntity>
 
-    /** Las notas cuyo título, texto o enlaces contienen [key], que ya pasó por [SearchKey.fold]. */
-    @Query("SELECT id FROM note WHERE instr(searchKey, :key) > 0")
+    /**
+     * Las notas cuyo título contiene [key], que ya pasó por [SearchKey.fold]. El título es lo que
+     * está antes del primer [SearchKey.SEPARATOR] (`char(31)`) de `searchKey`.
+     */
+    @Query("SELECT id FROM note WHERE instr(substr(searchKey, 1, instr(searchKey, char(31)) - 1), :key) > 0")
     suspend fun searchIds(key: String): List<String>
 
     @Upsert
